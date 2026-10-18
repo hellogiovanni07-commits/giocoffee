@@ -270,3 +270,7 @@
 
 @media (prefers-reduced-motion:reduce){.x-parol{animation:none}}
 .paused .x-parol{animation-play-state:paused}
+
+/* footer link to the GioCold line kit */
+.foot__line{color:var(--gold-l);font-weight:700;text-decoration:none;border-bottom:1.5px solid rgba(242,221,176,.5);padding-bottom:2px}
+.foot__line:hover{border-color:var(--gold-l)}
