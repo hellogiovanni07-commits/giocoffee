@@ -1,7 +1,7 @@
 /* GioCoffee · stores page */
-import { boot, $, $$, esc, MARK, store, toast, reduce } from './common.js?v=13';
-import { STORES } from './data.js?v=13';
-import { MAP_SVG, pinsHTML, openNow, hoursText } from './map.js?v=13';
+import { boot, $, $$, esc, MARK, store, toast, reduce } from './common.js?v=14';
+import { STORES } from './data.js?v=14';
+import { MAP_SVG, pinsHTML, openNow, hoursText } from './map.js?v=14';
 
 boot('stores.html');
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -42,8 +42,8 @@ pick(STORES.some(s => s.id === h) ? h : store.get('store', 'bgc'));
 
 /* ---------- the storefront turns ----------
    96 Blender views, 3.75° apart (phones and data-saver load every other one). They download six at a time, nearest
-   the front first, are decoded once at the canvas's own size, and every frame blends the two views either side of
-   the exact drag position, so the store follows the pointer continuously instead of stepping. */
+   the front first, and are decoded once at the canvas's own size; each frame shows the one view nearest the drag
+   position, so the picture stays crisp while it turns. */
 (() => {
   const spin = $('#spin'), img = $('#spinImg'); if (!spin) return;
   const ALL = 96, lite = matchMedia('(max-width: 700px)').matches || navigator.connection?.saveData;
@@ -61,15 +61,12 @@ pick(STORES.some(s => s.id === h) ? h : store.get('store', 'bgc'));
     cv.width = W; cv.height = H; lastKey = ''; frame();
   };
   const near = i => { for (let k = 0; k <= N / 2; k++) { if (ready[wrap(i + k)]) return wrap(i + k); if (ready[wrap(i - k)]) return wrap(i - k); } return -1; };
-  // draw the two views either side of pos, blended by how far between them we are
+  // draw the single nearest view (blending two views 3.75° apart reads as a double image, not motion)
   function frame() {
     raf = 0; if (!live) return;
-    const a = Math.floor(pos), t = pos - a, i = wrap(a), j = wrap(a + 1);
-    const A = ready[i] ? i : near(i), B = ready[j] ? j : -1;
-    const key = A + ':' + (B >= 0 && t > .02 ? B + ':' + t.toFixed(2) : '');
+    const i = wrap(Math.round(pos)), A = ready[i] ? i : near(i), key = String(A);
     if (A < 0 || key === lastKey) return; lastKey = key;
-    ctx.clearRect(0, 0, W, H); ctx.globalAlpha = 1; ctx.drawImage(views[A], 0, 0, W, H);
-    if (B >= 0 && t > .02 && A === i) { ctx.globalAlpha = t; ctx.drawImage(views[B], 0, 0, W, H); ctx.globalAlpha = 1; }
+    ctx.clearRect(0, 0, W, H); ctx.drawImage(views[A], 0, 0, W, H);
   }
   const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
   const announce = () => {

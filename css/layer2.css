@@ -362,7 +362,6 @@ body:has(.mnav.open) .hdr .find,body:has(.mnav.open) .hdr .cart-btn{color:var(--
 .sth__spin.live .sth__shop{opacity:0}
 @keyframes sthIn{from{opacity:0;transform:translateY(24px) scale(.97)}}
 .sth__cv{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
-.sth__spin.drag~.sth__chip,.sth__spin.drag~[data-depth]{transition:none}
 .sth__hint{position:absolute;left:50%;bottom:-6px;translate:-50% 0;display:inline-flex;align-items:center;gap:10px;font:700 22px/1 var(--hand);color:var(--gold-l);white-space:nowrap;pointer-events:none;opacity:.9}
 .sth__hint svg{width:42px;height:14px}
 @media (prefers-reduced-motion:reduce){.sth__now::before,.sth__shop,.sth__glow,.sth__stars i,.sth__chip{animation:none}}

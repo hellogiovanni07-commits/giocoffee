@@ -3,14 +3,14 @@
    intro and "Gio", the barista chat. Every page imports this.
    Orders, sign-up and newsletter are demo only.
    ========================================================= */
-import { ITEMS, CATS, byId, art, peso, STORES, SIZES, MILKS, LEVELS, isDrink, milkChoice, defaultNote } from './data.js?v=13';
+import { ITEMS, CATS, byId, art, peso, STORES, SIZES, MILKS, LEVELS, isDrink, milkChoice, defaultNote } from './data.js?v=14';
 /* stars per ₱50 follow the member's level; orders earn per full ₱50 */
 export const lineStars = l => l.reward ? 0 : Math.floor(l.price / 50) * l.q * starRate();
 export const starsFor = price => Math.floor(price / 50) * starRate();
 export const starRate = () => { const y = store.get('yearStars', 0); return (LEVELS.slice().reverse().find(l => y >= l.from) || LEVELS[0]).rate; };
 let fee = 0;
-import { hoursFor, hoursText, openNow } from './map.js?v=13';
-import { si } from './icons.js?v=13';
+import { hoursFor, hoursText, openNow } from './map.js?v=14';
+import { si } from './icons.js?v=14';
 
 export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -317,7 +317,7 @@ export async function openItem(id, fromEl = null) {
   $('#mAdd').addEventListener('click', e => { cart.add(id, { price: price(), note: note(), name: drink ? name : '' }, img); closeModal(); });
   // live 3D replaces the still once loaded
   try {
-    const { GioStage } = await import('./gio3d.js?v=13');
+    const { GioStage } = await import('./gio3d.js?v=14');
     if (!modalStage) modalStage = new GioStage(cv, { fit: 1.3 });
     modalStage.resume(); await modalStage.show(it.v, { name, assemble: !reduce });
     img.style.opacity = 0;
@@ -364,7 +364,8 @@ function depth() {
     ev = e; if (cur && !cur.contains(e.target)) { leave(cur); cur = null; }
     if (!raf) raf = requestAnimationFrame(apply);
     // parallax layers in the first screen drift against the pointer
-    const hero = e.target.closest && e.target.closest('.hero, .page-hero, .rw-hero');
+    // (not while a button is held: dragging the storefront or a cup should not shake the scene around it)
+    const hero = !e.buttons && e.target.closest && e.target.closest('.hero, .page-hero, .rw-hero');
     if (hero) { const r = hero.getBoundingClientRect(), dx = (e.clientX - r.left) / r.width - .5, dy = (e.clientY - r.top) / r.height - .5;
       $$('[data-depth]', hero).forEach(el => { const d = +el.dataset.depth; el.style.translate = `${(dx * d).toFixed(1)}px ${(dy * d).toFixed(1)}px`; }); }
   }, { passive: true });
