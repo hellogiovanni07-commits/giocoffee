@@ -120,9 +120,11 @@ pick(STORES.some(s => s.id === h) ? h : store.get('store', 'bgc'));
     else if (e.key === 'Home') { e.preventDefault(); set(0); announce(); }
   });
   // once the views near the front are in, a small turn and back so it's clear the store moves
+  // (only in the first few seconds, and only a small turn: a late, wide swing would look like a glitch)
+  const born = performance.now();
   if (!reduce) setTimeout(function peek() {
-    if (touched) return; if (order.slice(0, 16).some(i => !ready[i])) return setTimeout(peek, 300);
-    const t0 = performance.now(), amp = N / 8;
+    if (touched || performance.now() - born > 4000) return; if (order.slice(0, 10).some(i => !ready[i])) return setTimeout(peek, 250);
+    const t0 = performance.now(), amp = N / 24;
     const step = now => { if (touched) return; const k = Math.min(1, (now - t0) / 2600); set(Math.sin(k * Math.PI) * amp); if (k < 1) requestAnimationFrame(step); else set(0); };
     requestAnimationFrame(step);
   }, 900);
