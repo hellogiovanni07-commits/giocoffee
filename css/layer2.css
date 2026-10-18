@@ -430,3 +430,10 @@ body:has(.mnav.open) .hdr .find,body:has(.mnav.open) .hdr .cart-btn{color:var(--
   .sth__zoom{flex-direction:row;right:50%;translate:50% 0;top:auto;bottom:6px}
 }
 @media (pointer:coarse){.sth__hint .hz-d{display:none}.sth__hint .hz-m{display:inline}}
+/* smoother wash: a long eased fade (no visible line), reaching past the text column, fading in and out slowly */
+.sth__copy::before{inset:-100vh -300px -100vh -100vw;transition:opacity 600ms var(--ease-out);
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 480px),rgba(0,0,0,.92) calc(100% - 400px),rgba(0,0,0,.76) calc(100% - 320px),rgba(0,0,0,.55) calc(100% - 240px),rgba(0,0,0,.33) calc(100% - 160px),rgba(0,0,0,.15) calc(100% - 90px),rgba(0,0,0,.04) calc(100% - 36px),transparent 100%);
+  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 480px),rgba(0,0,0,.92) calc(100% - 400px),rgba(0,0,0,.76) calc(100% - 320px),rgba(0,0,0,.55) calc(100% - 240px),rgba(0,0,0,.33) calc(100% - 160px),rgba(0,0,0,.15) calc(100% - 90px),rgba(0,0,0,.04) calc(100% - 36px),transparent 100%)}
+@media (max-width:980px){.sth__copy::before{inset:-100vh -100vw -220px;
+  -webkit-mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 260px),rgba(0,0,0,.9) calc(100% - 210px),rgba(0,0,0,.7) calc(100% - 160px),rgba(0,0,0,.45) calc(100% - 110px),rgba(0,0,0,.22) calc(100% - 64px),rgba(0,0,0,.06) calc(100% - 26px),transparent 100%);
+  mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 260px),rgba(0,0,0,.9) calc(100% - 210px),rgba(0,0,0,.7) calc(100% - 160px),rgba(0,0,0,.45) calc(100% - 110px),rgba(0,0,0,.22) calc(100% - 64px),rgba(0,0,0,.06) calc(100% - 26px),transparent 100%)}}
