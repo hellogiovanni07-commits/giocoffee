@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#14332b">
+<title>GioStars Rewards · GioCoffee</title>
+<meta name="description" content="Join GioStars for free: earn 2 stars for every ₱50, redeem drinks, pastries and beans, and move up to Gold and Reserve.">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="icon" href="assets/mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="stylesheet" href="css/layer2.css?v=12">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body class="is-loading">
+<a class="skip" href="#main">Skip to content</a>
+<main id="main">
+  <section class="rw-hero on-dark" aria-labelledby="h-rw">
+    <div class="wrap">
+      <div class="rw-copy">
+        <h1 class="h-xl" id="h-rw"><span class="split-line"><span>Free coffee</span></span><span class="split-line"><span style="--d:.08s">is a <em style="font:700 1.05em/1 var(--hand);font-style:normal;color:var(--gold-l)">habit</em></span></span></h1>
+        <p class="lede rv">Join free, earn 2 ★ for every ₱50 and spend them on drinks, pastries and beans. Your name goes on the card too.</p>
+        <div class="hero__cta rv"><a class="btn btn-gold btn-lg" href="#join">Join GioStars</a><a class="btn btn-ghost-w btn-lg" href="#redeem">See what stars get you</a></div>
+      </div>
+      <div class="member-wrap rv" data-depth="-16">
+        <div class="member" id="member" role="img" aria-label="Your GioStars card">
+          <div class="member__top"><span><span class="lvl" id="mLvl">Not a member yet</span><span class="brand">Gio<span>Coffee</span></span></span>
+          <svg class="mk" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="31" fill="#fff" fill-opacity=".14"/><circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M38.2 10.6a7 7 0 1 0 1.9 7.6H34" fill="none" stroke="#f2ddb0" stroke-width="2.6" stroke-linecap="round"/><rect x="19" y="25" width="26" height="4.6" rx="2.3" fill="currentColor"/><path d="M21 31h22l-2.6 18.4a3 3 0 0 1-3 2.6H26.6a3 3 0 0 1-3-2.6z" fill="currentColor"/><path d="M22.1 36.4h19.8l-.9 6.6H23z" fill="#f2ddb0"/></svg></div>
+          <span class="member__chip" aria-hidden="true"></span>
+          <div class="member__bot"><span class="nm" id="mName">Your name</span><span class="stars"><span id="mStars">0</span> ★<small id="mNext">join to start</small></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="h-how">
+    <div class="wrap">
+      <div class="sec-head"><div><h2 class="h-l rv" id="h-how">Three steps to free</h2></div></div>
+      <ol class="how">
+        <li class="rv"><h3>Join for free</h3><p>In the app or at the counter, in 30 seconds. Add your birthday for a free drink that day.</p></li>
+        <li class="rv" style="--d:.06s"><h3>Order and pay</h3><p>2 ★ for every ₱50 at the Green level. Bring your own tumbler for 5 ★ more and ₱10 off.</p></li>
+        <li class="rv" style="--d:.12s"><h3>Spend your stars</h3><p>From 25 ★ for an extra shot up to 200 ★ for a bag of beans. Stars stay as long as you visit every 6 months.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec bg-crema" id="redeem" aria-labelledby="h-redeem">
+    <div class="wrap">
+      <div class="sec-head"><div><h2 class="h-l rv" id="h-redeem">What your stars get you</h2><p class="lede rv" id="redeemLede">Join to start collecting. The bars fill as your stars add up.</p></div></div>
+      <div class="redeem" id="rewardsList"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="levels" aria-labelledby="h-lv">
+    <div class="wrap">
+      <div class="sec-head"><div><h2 class="h-l rv" id="h-lv">The more you sip,<br>the more you get</h2><p class="lede rv">Levels are set by the stars you earn in a year. At five coffees a week you reach Gold in about eight months.</p></div></div>
+      <div style="overflow-x:auto"><table class="levels" id="levelsTable"></table></div>
+    </div>
+  </section>
+
+  <section class="sec bg-mint" id="join" aria-labelledby="h-join">
+    <div class="wrap join">
+      <div><h2 class="h-l rv" id="h-join">Your card is<br>30 seconds away</h2><p class="lede rv">The card at the top updates as you type. New members start with 25 ★, enough for a free extra shot.</p></div>
+      <div class="rv">
+        <div class="seg" role="tablist" aria-label="Join or sign in"><button type="button" role="tab" aria-selected="true" aria-controls="joinForm" id="tJoin">Join</button><button type="button" role="tab" aria-selected="false" aria-controls="signForm" id="tSign">Sign in</button></div>
+        <form id="joinForm" role="tabpanel" aria-labelledby="tJoin" novalidate>
+          <div class="form-row"><label><span class="sr">First name</span><input class="inp" id="jName" placeholder="First name" maxlength="12" autocomplete="given-name"></label><label><span class="sr">Last name</span><input class="inp" placeholder="Last name" autocomplete="family-name"></label></div>
+          <div class="form-row"><label><span class="sr">Email</span><input class="inp" id="jEmail" type="email" placeholder="Email" autocomplete="email"></label><label class="bday"><span>Birthday (optional)</span><input class="inp" type="date"></label></div>
+          <label class="check"><input type="checkbox"> Send me double-star days and new drinks</label>
+          <p class="err" id="jErr" role="alert"></p>
+          <button class="btn btn-lg btn-block" type="submit">Create my card</button>
+          <small class="demo">Demo only, nothing is sent.</small>
+        </form>
+        <form id="signForm" role="tabpanel" aria-labelledby="tSign" novalidate hidden>
+          <label><span class="sr">Email</span><input class="inp" id="sEmail" type="email" placeholder="Email" autocomplete="email"></label>
+          <label><span class="sr">Password</span><input class="inp" type="password" placeholder="Password" autocomplete="current-password"></label>
+          <p class="err" id="sErr" role="alert"></p>
+          <button class="btn btn-lg btn-block" type="submit">Sign in</button>
+          <small class="demo">Demo only. Signing in loads the sample card.</small>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="faq" aria-labelledby="h-faq">
+    <div class="wrap"><div class="faq">
+      <h2 class="h-l center rv" id="h-faq" style="margin-bottom:24px">Questions, answered</h2>
+      <details><summary>Do my stars expire?</summary><p>Not while you visit. Stars stay as long as you order at least once every 6 months, and we email you a month before anything would expire.</p></details>
+      <details><summary>Do delivery orders earn stars?</summary><p>Yes, when you order through the GioCoffee app or this website, including Grab and foodpanda deliveries placed from here. Orders placed inside the Grab or foodpanda apps don't earn stars.</p></details>
+      <details><summary>How do I get my birthday drink?</summary><p>Add your birthday when you join. On the day, any handcrafted drink in any size is free at any store.</p></details>
+      <details><summary>What is the tumbler bonus?</summary><p>Bring any clean reusable cup for ₱10 off and 5 extra stars. Buying a Gio Steel Tumbler adds 20 stars once.</p></details>
+      <details><summary>Can I share stars with a friend?</summary><p>Gold and Reserve members can send up to 100 stars a month to another member from the app.</p></details>
+    </div></div>
+  </section>
+</main>
+<script type="module" src="js/rewards.js?v=11"></script>
+</body>
+</html>

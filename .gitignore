@@ -1,0 +1,6 @@
+# local only
+.impeccable/
+# Blender working renders (the finished pictures live in assets/3d/)
+blender/out/
+blender/out_hero/
+__pycache__/

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>GioCoffee textures</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&family=Inter:wght@600;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
+</head><body>
+<pre id="out"></pre>
+<script type="module">
+/* Dumps every texture the Blender scene needs as PNG data URLs, plus the menu specs.
+   Read by blender/export_tex.py via `chrome --headless --dump-dom`. */
+import { PAINT } from '../js/gio3d.js?v=4';
+import { ITEMS } from '../js/data.js?v=4';
+await document.fonts.load('800 40px "Plus Jakarta Sans"'); await document.fonts.load('600 40px "Plus Jakarta Sans"'); await document.fonts.load('700 40px Caveat'); await document.fonts.load('700 20px Inter');
+const P = PAINT, T = {};
+const url = t => (t.image || t).toDataURL('image/png');
+T.paper = url(P.paperTex({})); T.paper_holiday = url(P.paperTex({ holiday: true }));
+T.sleeve = url(P.sleeveTex('')); T.iced_print = url(P.icedPrintTex('')); T.citrus = url(P.citrusTex());
+for (const it of ITEMS) {
+  const v = it.v;
+  if (v.kind === 'beans') T['bag_' + it.id] = url(P.bagTex(v.color, v.label, v.roast));
+  if (v.kind === 'mug') T['latte_' + it.id] = url(P.latteTex(v.liquid[0], v.art));
+  if (v.kind === 'hot' && v.open) T['latte_' + it.id] = url(P.latteTex(v.liquid[0], v.top === 'whip' ? 'cocoa' : (v.top || 'heart')));
+  if (v.kind === 'tumbler') T['decal_' + it.id] = url(P.decalTex((x, W, H) => { P.drawMark(x, W / 2, H * .42, H * .5, { sx: .58, mono: v.color === '#0e6b4e' ? P.GOLD : P.GREEN }); P.wordmark(x, W / 2, H * .86, 46, { color: v.color === '#0e6b4e' ? '#f3ebdd' : P.HOUSE, accent: v.color === '#0e6b4e' ? P.GOLD : P.GREEN }); }, 1024, 512));
+  if (v.kind === 'ceramic') T['decal_' + it.id] = url(P.decalTex((x, W, H) => { P.drawMark(x, W / 2, H * .38, H * .56, { sx: .62, mono: P.GOLD }); P.wordmark(x, W / 2, H * .86, 52, { color: '#f3ebdd', accent: P.GOLD }); }, 1024, 512));
+  if (v.kind === 'mug') T['decal_' + it.id] = url(P.decalTex((x, W, H) => { P.drawMark(x, W / 2, H / 2, H * .82, { sx: .55, mono: v.cup === '#ffffff' || !v.cup ? null : (v.cup === '#c9a15b' ? P.HOUSE : P.GOLD) }); }, 1024, 256));
+}
+document.getElementById('out').textContent = JSON.stringify({ tex: T, items: ITEMS });
+document.title = 'done';
+</script></body></html>

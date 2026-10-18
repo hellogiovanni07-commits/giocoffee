@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GioCoffee 3D viewer</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&family=Inter:wght@400;600;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<style>
+  html,body{margin:0;height:100%;background:transparent;font-family:Inter,sans-serif}
+  body.viewer{background:radial-gradient(120% 90% at 50% 20%,#fbf8f2,#e9e1d2)}
+  #c{width:100vw;height:100vh;display:block}
+  nav{position:fixed;left:12px;top:12px;bottom:12px;width:230px;overflow:auto;background:rgba(255,255,255,.85);border-radius:16px;padding:10px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+  nav button{display:block;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:999px;font:600 13px Inter;color:#14332b;cursor:pointer}
+  nav button[aria-pressed=true]{background:#0e6b4e;color:#fff}
+  nav h1{font:800 18px "Plus Jakarta Sans";color:#14332b;margin:4px 10px 8px}
+  nav input{width:calc(100% - 20px);margin:0 10px 8px;padding:8px 10px;border:1px solid #ccd;border-radius:999px;font:inherit}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+/* Two uses:
+   - viewer:  tools/render.html            (list on the left, drag to spin)
+   - capture: tools/render.html?id=x&still  (one still frame on a transparent background, sets window.__done) */
+import { GioStage } from '../js/gio3d.js?v=4';
+import { ITEMS, byId } from '../js/data.js?v=4';
+const q = new URLSearchParams(location.search), still = q.has('still');
+const stage = new GioStage(document.getElementById('c'), { still, interactive: !still, steam: !still });
+if (still) {
+  const it = byId(q.get('id'));
+  await stage.show(it.v, { name: q.get('name') || '' });
+  stage.renderStill(+(q.get('rot') || -0.35));
+  window.__done = true; document.title = 'done';
+} else {
+  document.body.classList.add('viewer');
+  const nav = document.createElement('nav');
+  nav.innerHTML = '<h1>GioCoffee 3D</h1><input id="nm" placeholder="Name on the cup" value="Giovanni">' + ITEMS.map(i => `<button data-id="${i.id}">${i.name}</button>`).join('');
+  document.body.append(nav);
+  let cur = ITEMS[0];
+  const show = it => { cur = it; nav.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === it.id)); stage.show(it.v, { name: nav.querySelector('#nm').value }); };
+  nav.addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(byId(b.dataset.id)); });
+  nav.querySelector('#nm').addEventListener('change', () => show(cur));
+  show(cur);
+}
+</script>
+</body>
+</html>

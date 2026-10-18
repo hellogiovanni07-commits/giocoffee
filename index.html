@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#0e6b4e">
+<title>GioCoffee · Brewed for you, by name</title>
+<meta name="description" content="GioCoffee: handcrafted coffee in BGC and Makati. Order ahead, build your own drink, earn GioStars and watch the barista write your name on the cup.">
+<meta property="og:title" content="GioCoffee · Brewed for you, by name">
+<meta property="og:description" content="Handcrafted coffee in BGC and Makati. Order ahead and earn GioStars.">
+<meta property="og:image" content="https://hellogiovanni07-commits.github.io/giocoffee/assets/3d/maple-oat-latte.webp">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="icon" href="assets/mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="stylesheet" href="css/layer2.css?v=12">
+<link rel="preload" as="image" href="assets/3d/maple-oat-latte.webp?v=5">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body class="is-loading">
+<a class="skip" href="#main">Skip to content</a>
+<main id="main">
+
+<!-- ============ HERO: the cup is built and labelled for you ============ -->
+<section class="hero" id="hero" aria-labelledby="h-hero">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="hero__rings" aria-hidden="true" data-depth="-14"><i></i><i></i><i></i></div>
+  <p class="hero__script" aria-hidden="true" data-depth="10">brewed for you, by name</p>
+  <div class="hero__beans" aria-hidden="true" data-depth="28"><i style="left:47%;top:16%;transform:rotate(30deg)"></i><i style="left:1.2%;top:40%;transform:rotate(-40deg) scale(.8)"></i><i style="left:93%;top:64%;transform:rotate(70deg) scale(1.1)"></i></div>
+  <div class="wrap hero__in">
+    <div class="hero__copy">
+      <h1 class="h-xl" id="h-hero"><span class="split-line"><span>Your name.</span></span><span class="split-line"><span style="--d:.08s">Your cup.</span></span><span class="split-line hero__way"><span style="--d:.16s"><em id="heroName">your way</em></span></span></h1>
+      <p class="lede rv" style="--d:.2s" id="heroDesc">Blonde espresso, steamed oat milk and Antique muscovado syrup, finished with a toasted oat crumble.</p>
+      <p class="hero__promise rv" style="--d:.24s">Every drink is made to order and every cup carries your name, written by your barista.</p>
+      <div class="hero__cta rv" style="--d:.3s">
+        <button class="btn btn-white btn-lg" type="button" id="heroOrder"><span>Order<span class="o-name"> the <b id="heroItem">Muscovado Oat Latte</b></span></span><span class="btn__price" id="heroPrice">₱215</span></button>
+        <a class="btn btn-ghost-w btn-lg" href="menu.html">Full menu</a>
+      </div>
+      <div class="hero__picks rv" style="--d:.38s" role="radiogroup" aria-label="-ber months drinks" id="picks"></div>
+    </div>
+    <div class="hero__stage">
+      <div class="hero__arch" aria-hidden="true"></div>
+      <img class="hero__poster" id="heroPoster" src="assets/3d/maple-oat-latte.webp?v=5" alt="Muscovado Oat Latte in a GioCoffee cup" width="640" height="640">
+      <canvas id="heroCanvas" aria-label="Your cup in 3D. Drag to spin it."></canvas>
+      <div class="ticket" id="ticket">
+        <div class="ticket__top"><b>GioCoffee · 5th Ave</b><span id="ticketNo">#0427</span></div>
+        <ul class="ticket__boxes" id="ticketBoxes" aria-label="What the barista marks on your cup"></ul>
+        <label class="ticket__name"><span>Name</span><input id="nameIn" maxlength="12" placeholder="type yours" autocomplete="given-name" spellcheck="false"></label>
+      </div>
+      <p class="hero__hint" aria-hidden="true"><svg viewBox="0 0 48 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 22c12 2 26-2 36-16"/><path d="M33 5l7 1-1 7"/></svg>drag the cup</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NOW POURING: names on cups, live ============ -->
+<div class="pour" role="region" aria-label="Orders being made at 5th Ave right now">
+  <span class="pour__live"><i></i>Now pouring<span class="pour__at"> at 5th Ave</span></span>
+  <div class="pour__track"><div class="pour__row" id="pourRow"></div></div>
+</div>
+
+<!-- ============ FALL STACK ============ -->
+<section class="sec sec-fall" aria-labelledby="h-feat">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><h2 class="h-l rv" id="h-feat">The -ber months are brewing</h2><p class="lede rv">Three -ber months drinks, here till December, and the pastry to pair them with.</p></div>
+      <a class="btn btn-line rv" href="menu.html#seasonal">The whole -ber menu</a>
+    </div>
+    <div class="stack" id="feats" role="group" aria-label="-ber months drinks"></div>
+  </div>
+</section>
+
+<!-- ============ BUILDER ============ -->
+<section class="sec bg-crema" id="build" aria-labelledby="h-build">
+  <div class="wrap">
+    <div class="sec-head"><div><h2 class="h-l rv" id="h-build">Build it the way<br>you'd say it</h2><p class="lede rv">Pick a drink, then change anything. The cup, the label and the price update as you go, and the bar gets exactly this.</p></div></div>
+    <div class="builder">
+      <div class="builder__stage rv">
+        <canvas id="buildCanvas" aria-label="Your drink in 3D. Drag to spin it."></canvas>
+        <div class="layers" id="layers" role="group" aria-label="What's in your cup"><p>In your cup</p><div class="layers__glass"><div class="layers__fill" id="layerFill"></div></div><ul id="layerKey"></ul></div>
+        <div class="label-strip" id="labelStrip"></div>
+      </div>
+      <div class="builder__opts" id="opts">
+        <fieldset class="opt"><legend>Drink <span class="opt__hand" id="bDrinkHand">a classic</span></legend><div class="chips" data-g="base"></div></fieldset>
+        <fieldset class="opt"><legend>Hot, iced or blended</legend><div class="chips" data-g="temp"></div></fieldset>
+        <fieldset class="opt"><legend>Size</legend><div class="sizes" data-g="size"></div></fieldset>
+        <fieldset class="opt" id="milkOpt"><legend>Milk</legend><div class="chips" data-g="milk"></div></fieldset>
+        <fieldset class="opt"><legend>Espresso shots <span class="opt__note">+₱30 each extra</span></legend><div class="stepper"><button type="button" id="shotM" aria-label="One shot less">−</button><output id="shotN" aria-live="polite">2</output><button type="button" id="shotP" aria-label="One more shot">+</button><span class="shots" id="shotDots" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div></fieldset>
+        <fieldset class="opt"><legend>Syrup</legend><div class="chips" data-g="syrup"></div></fieldset>
+        <label class="opt"><span class="legend">Name on the cup</span><input class="field-name" id="bName" maxlength="12" placeholder="Your name" autocomplete="given-name" spellcheck="false"></label>
+        <div class="builder__total"><div><b id="bPrice">₱165</b><small id="bSum">Medio hot caffè latte, whole milk, 2 shots</small></div><button class="btn btn-lg" type="button" id="bAdd">Add to order</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REWARDS ============ -->
+<section class="sec rewards on-dark" aria-labelledby="h-rw">
+  <div class="wrap">
+    <div class="rw-grid">
+      <div>
+        <h2 class="h-l rv" id="h-rw">Every cup gets you<br>closer to a free one</h2>
+        <p class="lede rv">Join GioStars free and earn 2 ★ for every ₱50. Bring your tumbler for 5 more. Your birthday drink is on us.</p>
+        <div class="hero__cta rv"><a class="btn btn-gold btn-lg" href="rewards.html#join">Join GioStars</a><a class="btn btn-ghost-w btn-lg" href="rewards.html">How it works</a></div>
+      </div>
+      <div class="calc-card rv">
+        <label class="calc__q" for="visits">How many coffees a week?</label>
+        <div class="calc__row"><input type="range" id="visits" min="1" max="14" value="5" aria-describedby="rwLine"><output id="visitsOut" for="visits">5</output></div>
+        <div class="calc__res"><span class="calc__big"><b id="rwStars">162</b><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/></svg></span><p id="rwLine">stars a month</p><small class="calc__fine">Assumes about ₱190 a cup at the Green level, 2 ★ per ₱50.</small></div>
+      </div>
+    </div>
+    <div class="ladder" id="ladder" role="group" aria-label="What your stars get you"></div>
+  </div>
+</section>
+
+<!-- ============ ROAST + ORIGINS ============ -->
+<section class="sec" id="roast" aria-labelledby="h-roast">
+  <div class="wrap">
+    <div class="roast">
+      <div class="roast__bean" aria-hidden="true">
+        <svg viewBox="0 0 200 200" id="bean"><defs>
+          <radialGradient id="bg1" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          <radialGradient id="bg2" cx=".5" cy=".5" r=".55"><stop offset=".7" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+          <filter id="oil"><feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 -.55"/><feComposite in2="SourceGraphic" operator="in"/></filter></defs>
+          <g id="beanG" transform="rotate(-28 100 100)">
+            <ellipse class="bean-fill" cx="100" cy="100" rx="62" ry="86" fill="#6e4126"/>
+            <ellipse cx="100" cy="100" rx="62" ry="86" fill="url(#bg2)"/>
+            <ellipse id="beanOil" cx="100" cy="100" rx="62" ry="86" filter="url(#oil)" opacity=".15"/>
+            <path d="M100 18c-18 30 18 52 0 82s18 52 0 82" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="7" stroke-linecap="round"/>
+            <path d="M100 18c-18 30 18 52 0 82s18 52 0 82" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="2" transform="translate(4 0)"/>
+            <ellipse cx="100" cy="100" rx="62" ry="86" fill="url(#bg1)"/>
+          </g>
+        </svg>
+        <span class="roast__temp" id="roastTemp">212 °C</span>
+      </div>
+      <div>
+        <h2 class="h-l rv" id="h-roast">Find your roast</h2>
+        <p class="lede rv">Three roasts, three different cups. Slide to roast longer and taste how the coffee changes.</p>
+        <div class="roast__slider rv">
+          <input type="range" id="roastIn" min="0" max="100" value="50" aria-label="Roast level" aria-valuetext="Medium roast">
+          <div class="roast__ticks" aria-hidden="true"><span>Blonde</span><span>Medium</span><span>Dark</span></div>
+        </div>
+        <div class="roast__read rv">
+          <h3 class="h-m" id="roastName">Medium roast</h3>
+          <p id="roastDesc"></p>
+          <dl class="roast__notes" id="roastNotes"></dl>
+          <button class="btn btn-dark" type="button" id="roastBuy">Get these beans · ₱590</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="origins">
+      <div class="origins__head"><h3 class="h-m rv">Five growing regions, one roastery</h3><p class="rv">Green coffee travels from each region to our roaster in Taguig. Distances are straight-line and rounded.</p></div>
+      <div class="routes rv" id="routes">
+        <svg class="routes__svg" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true" id="routeSvg"></svg>
+        <div class="routes__pts" id="routePts"></div>
+      </div>
+      <div class="origin-card" id="originCard" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ORDER AHEAD ============ -->
+<section class="sec bg-mint" aria-labelledby="h-app">
+  <div class="wrap app">
+    <div>
+      <h2 class="h-l rv" id="h-app">Skip the line.<br>Keep the ritual.</h2>
+      <p class="lede rv">Order from your phone, pay once and walk in to a cup with your name already on it. Pick up, drive-thru or delivery.</p>
+      <div class="steps" role="tablist" aria-label="How ordering ahead works" id="steps">
+        <button class="step" role="tab" aria-selected="true" aria-controls="phone" data-step="0" type="button"><span class="step__n">1</span><span><b>Choose and customise</b><small>Your usual is saved, down to the last pump.</small></span><i class="step__bar"></i></button>
+        <button class="step" role="tab" aria-selected="false" aria-controls="phone" data-step="1" type="button"><span class="step__n">2</span><span><b>Pick a store and a time</b><small>See each store's wait before you choose.</small></span><i class="step__bar"></i></button>
+        <button class="step" role="tab" aria-selected="false" aria-controls="phone" data-step="2" type="button"><span class="step__n">3</span><span><b>Walk in, it's waiting</b><small>We tell you the moment your name is on it.</small></span><i class="step__bar"></i></button>
+      </div>
+    </div>
+    <div class="phone-wrap"><div class="phone" id="phone" role="tabpanel" aria-label="GioCoffee app preview"><div class="screen">
+      <div class="scr on" data-scr="0">
+        <p class="scr__hi">Good morning,<br><span class="ph-name">Giovanni</span></p>
+        <p class="scr__sub">Your usual</p>
+        <div id="phRows" class="scr__rows"></div>
+        <div class="scr__meta"><div><span>Pick up</span><b>Reserve · 5th Ave</b></div><div><span>Ready at</span><b class="t-ready">8:42 am</b></div><div><span>Pay with</span><b>GCash</b></div><div><span>You earn</span><b>+20 ★</b></div></div>
+        <div class="bigbtn">Checkout · ₱540</div>
+      </div>
+      <div class="scr" data-scr="1">
+        <p class="scr__hi">Pick up at</p>
+        <div class="map-mini"><svg viewBox="0 0 100 70" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="100" height="70" fill="#d7ebe2"/><path d="M-2 40L104 30M20 70L58 0M58 70l8-70" stroke="#fff" stroke-width="3"/><circle class="mm-you" cx="40" cy="52" r="3" fill="#2f6fd6"/><path class="mm-route" d="M40 52Q52 46 62 36" fill="none" stroke="#2f6fd6" stroke-width="1.6" stroke-dasharray="3 2"/><circle cx="62" cy="36" r="5" fill="#0e6b4e"/></svg></div>
+        <div class="row sel"><span>Reserve · 5th Ave<small>450 m · ready in 6 min</small></span><b>✓</b></div>
+        <div class="row"><span>Uptown<small>1.2 km · ready in 9 min</small></span></div>
+        <div class="slots"><span class="t-a">8:36</span><span class="on t-ready">8:42</span><span class="t-b">8:50</span></div>
+        <div class="bigbtn">Confirm pick-up at <span class="t-ready">8:42</span></div>
+      </div>
+      <div class="scr" data-scr="2">
+        <div class="making">
+          <svg class="making__cup" viewBox="0 0 120 150" aria-hidden="true"><defs><clipPath id="mkClip"><path d="M22 40h76l-8 96a8 8 0 0 1-8 7H38a8 8 0 0 1-8-7z"/></clipPath></defs>
+            <path d="M22 40h76l-8 96a8 8 0 0 1-8 7H38a8 8 0 0 1-8-7z" fill="#fff" stroke="#14332b" stroke-width="2.5"/>
+            <g clip-path="url(#mkClip)"><rect class="making__fill" x="0" y="40" width="120" height="110" fill="#c69a6c"/></g>
+            <rect x="16" y="30" width="88" height="12" rx="6" fill="#14332b"/>
+            <text class="making__name" x="60" y="98" text-anchor="middle">Giovanni</text>
+          </svg>
+          <p class="making__t" id="makeT">Mika is pulling your shots</p>
+          <p class="making__eta"><b id="makeEta">6:00</b> until it's on the shelf</p>
+          <span class="pill gold">+20 ★ on the way</span>
+        </div>
+      </div>
+    </div></div></div>
+  </div>
+</section>
+
+<!-- ============ GIFTS ============ -->
+<section class="sec" id="gifts" aria-labelledby="h-gift">
+  <div class="wrap gifts">
+    <div class="gift-stage">
+      <button class="gflip" id="gflip" type="button" aria-label="Flip the gift card">
+        <span class="gcard gcard--front" id="gcard">
+          <svg class="gc-pattern" viewBox="0 0 200 126" preserveAspectRatio="xMidYMid slice" aria-hidden="true" id="gcPat"></svg>
+          <span class="gc-top"><span class="gc-k">GioCoffee gift card</span><span id="gcMark" class="gc-mark"></span></span>
+          <span class="gc-msg"><small id="gcTo">For you</small><b id="gcMsg">Coffee's on me!</b></span>
+          <span class="gc-amt" id="gcAmt">₱500</span>
+        </span>
+        <span class="gcard gcard--back">
+          <span class="gc-stripe"></span>
+          <span class="gc-back-msg"><small>Message</small><b id="gcBackMsg">Coffee's on me!</b><small id="gcFrom">from a friend</small></span>
+          <span class="gc-code"><svg viewBox="0 0 120 30" aria-hidden="true" id="gcBars"></svg><small>6034 9921 0427 3150 · demo card</small></span>
+        </span>
+      </button>
+      <p class="gift-hint" aria-hidden="true">tap to see the back</p>
+    </div>
+    <div>
+      <h2 class="h-l rv" id="h-gift">Send someone<br>a little warmth</h2>
+      <p class="lede rv">Pick a design, an amount and a message. It arrives by email in seconds and adds straight to their GioStars wallet.</p>
+      <fieldset class="opt rv"><legend>Design</legend><div class="gc-designs" id="gcDesigns"></div></fieldset>
+      <fieldset class="opt rv"><legend>Amount</legend><div class="chips" id="gcAmts"></div></fieldset>
+      <form class="gc-form rv" id="gcForm" novalidate>
+        <div class="form-row"><label><span class="sr">Their name</span><input class="inp" id="gcToIn" placeholder="Their name" maxlength="18"></label><label><span class="sr">Their email</span><input class="inp" id="gcEmail" type="email" placeholder="Their email" autocomplete="off"></label></div>
+        <label><span class="sr">Your message</span><input class="inp" id="gcMsgIn" placeholder="Your message" maxlength="26"></label>
+        <p class="err" id="gcErr" role="alert"></p>
+        <button class="btn btn-lg" type="submit">Send the gift card</button>
+        <small class="demo">Demo only, nothing is sent.</small>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STORES ============ -->
+<section class="sec bg-crema" aria-labelledby="h-stores">
+  <div class="wrap split">
+    <div class="map" id="homeMap"></div>
+    <div>
+      <h2 class="h-l rv" id="h-stores">Four stores.<br>One never closes.</h2>
+      <p class="lede rv">Two in BGC, two in Makati. Uptown runs 24 hours; the 5th Ave Reserve has a slow bar, a drive-thru and seats under the acacias.</p>
+      <div class="store-list" id="homeStores"></div>
+      <a class="btn btn-dark btn-lg" href="stores.html">Open the store finder</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REVIEWS + SOCIAL ============ -->
+<section class="sec" aria-labelledby="h-rev">
+  <div class="wrap">
+    <div class="sec-head"><div><h2 class="h-l rv" id="h-rev">Spelled right, every time*</h2><p class="lede rv">*Almost. What regulars say once their name lands on a cup.</p></div><div class="car-nav"><button type="button" id="revL" aria-label="Previous reviews"></button><button type="button" id="revR" aria-label="Next reviews"></button></div></div>
+  </div>
+  <div class="sleeves" id="reviews" tabindex="0" role="region" aria-label="Customer reviews, scroll sideways"></div>
+  <div class="wrap">
+    <div class="sec-head wall-head"><div><h2 class="h-m">On the pick-up shelf at 5th Ave</h2><p class="lede">Names facing out, so you never grab the wrong one.</p></div><a class="btn btn-line" href="menu.html">Put yours on it</a></div>
+    <div class="shelf" id="wall"></div>
+  </div>
+</section>
+
+<section class="sec news-sec" aria-labelledby="h-news">
+  <div class="wrap"><div class="news">
+    <div><h2 class="h-l" id="h-news">First sips, first.</h2><p>New drinks a week before launch, double-star days and a birthday treat. One email every two weeks.</p></div>
+    <form id="newsForm" novalidate><label class="sr" for="newsEmail">Email</label><input id="newsEmail" type="email" placeholder="you@email.com" autocomplete="email"><button class="btn btn-dark" type="submit">Subscribe</button><p class="err" id="newsErr" role="alert"></p></form>
+  </div></div>
+</section>
+</main>
+
+<script type="module" src="js/home.js?v=11"></script>
+</body>
+</html>

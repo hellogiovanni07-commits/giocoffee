@@ -1,0 +1,680 @@
+[
+ {
+  "id": "maple-oat-latte",
+  "cat": "seasonal",
+  "name": "Muscovado Oat Latte",
+  "price": 215,
+  "kcal": 230,
+  "caf": 150,
+  "tag": "New",
+  "milk": "oat",
+  "desc": "Blonde espresso, steamed oat milk and Antique muscovado syrup, finished with a toasted oat crumble.",
+  "bg": "#b8742f",
+  "v": {
+   "kind": "hot",
+   "liquid": [
+    "#c69a6c"
+   ],
+   "sleeve": true
+  }
+ },
+ {
+  "id": "pumpkin-cream-cold-brew",
+  "cat": "seasonal",
+  "name": "Pumpkin Cream Cold Brew",
+  "price": 225,
+  "kcal": 250,
+  "caf": 185,
+  "tag": "Fan favourite",
+  "desc": "Slow-steeped cold brew under a cap of kalabasa (pumpkin) cold foam and a dust of cinnamon.",
+  "bg": "#c8622b",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#e08a3c",
+    "#24120a",
+    "#24120a"
+   ],
+   "ice": 6
+  }
+ },
+ {
+  "id": "salted-caramel-frappe",
+  "cat": "seasonal",
+  "name": "Salted Caramel Frappé",
+  "price": 235,
+  "kcal": 410,
+  "caf": 95,
+  "tag": "New",
+  "desc": "Coffee blended with caramel and ice, whipped cream and a sea-salt caramel drizzle.",
+  "bg": "#6b3e26",
+  "v": {
+   "kind": "frappe",
+   "liquid": [
+    "#c99a64",
+    "#d9a36a"
+   ],
+   "whip": true,
+   "drizzle": "#b0641c",
+   "crumbs": "#8a4b1a"
+  }
+ },
+ {
+  "id": "toasted-hazelnut-mocha",
+  "cat": "seasonal",
+  "name": "Toasted Hazelnut Mocha",
+  "price": 220,
+  "kcal": 340,
+  "caf": 175,
+  "desc": "Espresso, dark Davao cocoa and roasted hazelnut, in the first red cup of the season.",
+  "bg": "#4a2414",
+  "v": {
+   "kind": "hot",
+   "liquid": [
+    "#8a5a36"
+   ],
+   "sleeve": true,
+   "holiday": true
+  }
+ },
+ {
+  "id": "americano",
+  "cat": "hot",
+  "name": "Caffè Americano",
+  "price": 140,
+  "kcal": 15,
+  "caf": 225,
+  "desc": "Espresso shots topped with hot water for a light layer of crema.",
+  "v": {
+   "kind": "hot",
+   "liquid": [
+    "#2a140a"
+   ],
+   "sleeve": true
+  }
+ },
+ {
+  "id": "cafe-latte",
+  "cat": "hot",
+  "name": "Caffè Latte",
+  "price": 165,
+  "kcal": 190,
+  "caf": 150,
+  "desc": "Rich espresso and steamed milk with a thin layer of foam.",
+  "v": {
+   "kind": "mug",
+   "liquid": [
+    "#c69a6c"
+   ],
+   "art": "rosetta"
+  }
+ },
+ {
+  "id": "cappuccino",
+  "cat": "hot",
+  "name": "Cappuccino",
+  "price": 165,
+  "kcal": 140,
+  "caf": 150,
+  "desc": "Espresso under a deep, airy layer of milk foam.",
+  "v": {
+   "kind": "mug",
+   "liquid": [
+    "#a8754a"
+   ],
+   "art": "heart",
+   "cup": "#ffffff"
+  }
+ },
+ {
+  "id": "flat-white",
+  "cat": "hot",
+  "name": "Flat White",
+  "price": 175,
+  "kcal": 170,
+  "caf": 195,
+  "tag": "Barista pick",
+  "desc": "Two ristretto shots and silky whole milk, finished with a tulip of latte art.",
+  "v": {
+   "kind": "mug",
+   "liquid": [
+    "#a8754a"
+   ],
+   "art": "tulip",
+   "cup": "#14332b"
+  }
+ },
+ {
+  "id": "caramel-macchiato",
+  "cat": "hot",
+  "name": "Caramel Macchiato",
+  "price": 195,
+  "kcal": 250,
+  "caf": 150,
+  "tag": "Best seller",
+  "desc": "Vanilla milk marked with espresso and a cross-hatch of buttery caramel.",
+  "v": {
+   "kind": "hot",
+   "open": true,
+   "liquid": [
+    "#d9b48a"
+   ],
+   "top": "crosshatch",
+   "sleeve": true
+  }
+ },
+ {
+  "id": "spanish-latte",
+  "cat": "hot",
+  "name": "Spanish Latte",
+  "price": 185,
+  "kcal": 260,
+  "caf": 150,
+  "desc": "Espresso and condensed milk, the way Manila likes it: smooth and sweet.",
+  "v": {
+   "kind": "hot",
+   "open": true,
+   "liquid": [
+    "#b88352"
+   ],
+   "top": "heart",
+   "sleeve": true
+  }
+ },
+ {
+  "id": "caffe-mocha",
+  "cat": "hot",
+  "name": "Caffè Mocha",
+  "price": 190,
+  "kcal": 360,
+  "caf": 175,
+  "desc": "Espresso, bittersweet cocoa and steamed milk under whipped cream.",
+  "v": {
+   "kind": "hot",
+   "open": true,
+   "liquid": [
+    "#5a3020"
+   ],
+   "top": "whip",
+   "sleeve": true
+  }
+ },
+ {
+  "id": "hot-chocolate",
+  "cat": "hot",
+  "name": "Signature Hot Chocolate",
+  "price": 175,
+  "kcal": 380,
+  "caf": 25,
+  "desc": "Davao cacao, steamed milk and mini marshmallows. No coffee, all comfort.",
+  "v": {
+   "kind": "mug",
+   "liquid": [
+    "#4a2414"
+   ],
+   "art": "none",
+   "cup": "#c9a15b",
+   "marsh": true
+  }
+ },
+ {
+  "id": "iced-americano",
+  "cat": "cold",
+  "name": "Iced Americano",
+  "price": 150,
+  "kcal": 15,
+  "caf": 225,
+  "desc": "Espresso shots over cold water and ice.",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#c08a52",
+    "#5a2f14",
+    "#5a2f14"
+   ],
+   "ice": 8
+  }
+ },
+ {
+  "id": "iced-latte",
+  "cat": "cold",
+  "name": "Iced Caffè Latte",
+  "price": 175,
+  "kcal": 130,
+  "caf": 150,
+  "desc": "Espresso poured over milk and ice.",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#7a4a2a",
+    "#f4ebdc",
+    "#f4ebdc"
+   ],
+   "ice": 7
+  }
+ },
+ {
+  "id": "iced-spanish-latte",
+  "cat": "cold",
+  "name": "Iced Spanish Latte",
+  "price": 195,
+  "kcal": 240,
+  "caf": 150,
+  "tag": "Best seller",
+  "desc": "Condensed milk, cold milk and espresso, layered over ice.",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#5a2e16",
+    "#f4ebdc",
+    "#e3c48f"
+   ],
+   "ice": 7
+  }
+ },
+ {
+  "id": "cold-brew",
+  "cat": "cold",
+  "name": "Cold Brew",
+  "price": 170,
+  "kcal": 5,
+  "caf": 205,
+  "desc": "Steeped for 20 hours for a super-smooth, chocolatey cup.",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#24120a"
+   ],
+   "ice": 7,
+   "lid": "flat"
+  }
+ },
+ {
+  "id": "vanilla-sweet-cream-cold-brew",
+  "cat": "cold",
+  "name": "Vanilla Sweet Cream Cold Brew",
+  "price": 195,
+  "kcal": 110,
+  "caf": 185,
+  "desc": "Cold brew with a float of house-made vanilla sweet cream.",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#c9a27a",
+    "#24120a",
+    "#24120a"
+   ],
+   "ice": 6,
+   "lid": "flat"
+  }
+ },
+ {
+  "id": "iced-caramel-macchiato",
+  "cat": "cold",
+  "name": "Iced Caramel Macchiato",
+  "price": 205,
+  "kcal": 250,
+  "caf": 150,
+  "desc": "Vanilla milk, ice, espresso shots and a caramel cross-hatch.",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#6b3a1c",
+    "#e8d2b0",
+    "#f4ebdc"
+   ],
+   "ice": 6,
+   "drizzle": "#b0641c"
+  }
+ },
+ {
+  "id": "nitro-cold-brew",
+  "cat": "cold",
+  "name": "Nitro Cold Brew",
+  "price": 210,
+  "kcal": 5,
+  "caf": 265,
+  "desc": "Cold brew infused with nitrogen for a velvety, cascading pour.",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#e9dcc4",
+    "#24120a",
+    "#24120a"
+   ],
+   "ice": 0,
+   "lid": "flat"
+  }
+ },
+ {
+  "id": "java-chip-frappe",
+  "cat": "frappe",
+  "name": "Java Chip Frappé",
+  "price": 225,
+  "kcal": 440,
+  "caf": 105,
+  "tag": "Best seller",
+  "desc": "Coffee, mocha sauce and chocolate chips blended with ice, under whipped cream.",
+  "v": {
+   "kind": "frappe",
+   "liquid": [
+    "#7a4a30",
+    "#9c6a48"
+   ],
+   "whip": true,
+   "drizzle": "#3a1a0c",
+   "chips": true
+  }
+ },
+ {
+  "id": "caramel-frappe",
+  "cat": "frappe",
+  "name": "Caramel Frappé",
+  "price": 215,
+  "kcal": 380,
+  "caf": 90,
+  "desc": "Coffee, caramel syrup, milk and ice, blended and topped with caramel.",
+  "v": {
+   "kind": "frappe",
+   "liquid": [
+    "#c99a64",
+    "#d8b080"
+   ],
+   "whip": true,
+   "drizzle": "#b0641c"
+  }
+ },
+ {
+  "id": "mocha-frappe",
+  "cat": "frappe",
+  "name": "Mocha Frappé",
+  "price": 215,
+  "kcal": 370,
+  "caf": 100,
+  "desc": "Coffee, cocoa and milk blended with ice.",
+  "v": {
+   "kind": "frappe",
+   "liquid": [
+    "#6a3e28",
+    "#875a3e"
+   ],
+   "whip": true,
+   "drizzle": "#3a1a0c"
+  }
+ },
+ {
+  "id": "matcha-cream-frappe",
+  "cat": "frappe",
+  "name": "Matcha Cream Frappé",
+  "price": 220,
+  "kcal": 390,
+  "caf": 70,
+  "desc": "Uji matcha blended with milk and ice, whipped cream on top.",
+  "v": {
+   "kind": "frappe",
+   "liquid": [
+    "#9cc06a",
+    "#b6d38c"
+   ],
+   "whip": true,
+   "crumbs": "#7aa34a"
+  }
+ },
+ {
+  "id": "strawberry-cream-frappe",
+  "cat": "frappe",
+  "name": "Strawberry Cream Frappé",
+  "price": 215,
+  "kcal": 360,
+  "caf": 0,
+  "desc": "Strawberry purée, milk and ice, blended pink and creamy. Coffee-free.",
+  "v": {
+   "kind": "frappe",
+   "liquid": [
+    "#f2a7b8",
+    "#e06a86"
+   ],
+   "whip": true,
+   "drizzle": "#c8364f"
+  }
+ },
+ {
+  "id": "mango-graham-frappe",
+  "cat": "frappe",
+  "name": "Mango Graham Frappé",
+  "price": 225,
+  "kcal": 400,
+  "caf": 0,
+  "tag": "Only in PH",
+  "desc": "Guimaras mango, cream and crushed graham. A Filipino classic, blended.",
+  "v": {
+   "kind": "frappe",
+   "liquid": [
+    "#f5c242",
+    "#f0a828"
+   ],
+   "whip": true,
+   "crumbs": "#c48a4a"
+  }
+ },
+ {
+  "id": "iced-matcha-latte",
+  "cat": "tea",
+  "name": "Iced Matcha Latte",
+  "price": 195,
+  "kcal": 200,
+  "caf": 80,
+  "desc": "Stone-ground matcha shaken with milk over ice.",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#8db35a",
+    "#cfe0b4",
+    "#f4ebdc"
+   ],
+   "ice": 6
+  }
+ },
+ {
+  "id": "ube-latte",
+  "cat": "tea",
+  "name": "Iced Ube Latte",
+  "price": 195,
+  "kcal": 230,
+  "caf": 0,
+  "tag": "Only in PH",
+  "desc": "Purple yam, milk and ice with a swirl of ube halaya. Coffee-free.",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#9b7bc4",
+    "#c9b3e6",
+    "#f4ebdc"
+   ],
+   "ice": 6
+  }
+ },
+ {
+  "id": "chai-latte",
+  "cat": "tea",
+  "name": "Chai Tea Latte",
+  "price": 175,
+  "kcal": 240,
+  "caf": 95,
+  "desc": "Black tea with cinnamon, clove and cardamom, steamed with milk.",
+  "v": {
+   "kind": "hot",
+   "open": true,
+   "liquid": [
+    "#c28b5c"
+   ],
+   "top": "dust",
+   "sleeve": true
+  }
+ },
+ {
+  "id": "calamansi-refresher",
+  "cat": "tea",
+  "name": "Calamansi Refresher",
+  "price": 165,
+  "kcal": 90,
+  "caf": 45,
+  "desc": "Green coffee extract, calamansi and honey, shaken with ice.",
+  "v": {
+   "kind": "iced",
+   "liquid": [
+    "#e8c547",
+    "#f2d86a"
+   ],
+   "ice": 8,
+   "lime": true
+  }
+ },
+ {
+  "id": "butter-croissant",
+  "cat": "food",
+  "name": "Butter Croissant",
+  "price": 115,
+  "kcal": 260,
+  "desc": "27 layers of French butter, baked golden every morning.",
+  "v": {
+   "kind": "croissant"
+  }
+ },
+ {
+  "id": "ensaymada",
+  "cat": "food",
+  "name": "Ube Ensaymada",
+  "price": 125,
+  "kcal": 320,
+  "tag": "Only in PH",
+  "desc": "Soft brioche coil with ube butter, sugar and grated queso.",
+  "v": {
+   "kind": "ensaymada",
+   "top": "#c9a6e6"
+  }
+ },
+ {
+  "id": "blueberry-muffin",
+  "cat": "food",
+  "name": "Blueberry Muffin",
+  "price": 120,
+  "kcal": 360,
+  "desc": "Buttermilk muffin, full of blueberries, with a crunchy sugar top.",
+  "v": {
+   "kind": "muffin"
+  }
+ },
+ {
+  "id": "choc-chunk-cookie",
+  "cat": "food",
+  "name": "Double Chocolate Cookie",
+  "price": 95,
+  "kcal": 340,
+  "desc": "Dark cocoa dough loaded with 64% chocolate chunks and sea salt.",
+  "v": {
+   "kind": "cookie"
+  }
+ },
+ {
+  "id": "red-velvet-slice",
+  "cat": "food",
+  "name": "Red Velvet Slice",
+  "price": 165,
+  "kcal": 420,
+  "desc": "Three layers of red velvet with cream-cheese frosting.",
+  "v": {
+   "kind": "cake",
+   "sponge": "#a3202e",
+   "frost": "#f8f1e6"
+  }
+ },
+ {
+  "id": "tiramisu-slice",
+  "cat": "food",
+  "name": "Espresso Tiramisu",
+  "price": 175,
+  "kcal": 390,
+  "desc": "Savoiardi soaked in our espresso, mascarpone and cocoa.",
+  "v": {
+   "kind": "cake",
+   "sponge": "#b88a5c",
+   "frost": "#f4ead8",
+   "cocoa": true
+  }
+ },
+ {
+  "id": "benguet-beans",
+  "cat": "merch",
+  "name": "Benguet Medium Roast 250 g",
+  "price": 590,
+  "tag": "Single origin",
+  "desc": "Highland arabica from Atok, Benguet. Notes of brown sugar, citrus and cocoa.",
+  "v": {
+   "kind": "beans",
+   "color": "#0e6b4e",
+   "label": "BENGUET",
+   "roast": "MEDIUM ROAST"
+  }
+ },
+ {
+  "id": "sagada-dark",
+  "cat": "merch",
+  "name": "Sagada Dark Roast 250 g",
+  "price": 620,
+  "desc": "Mountain Province arabica, roasted dark for a bold, smoky cup.",
+  "v": {
+   "kind": "beans",
+   "color": "#3b2418",
+   "label": "SAGADA",
+   "roast": "DARK ROAST"
+  }
+ },
+ {
+  "id": "blonde-espresso-beans",
+  "cat": "merch",
+  "name": "Blonde Espresso Roast 250 g",
+  "price": 560,
+  "desc": "Lightly roasted for a sweet, mellow espresso.",
+  "v": {
+   "kind": "beans",
+   "color": "#c9a15b",
+   "label": "BLONDE",
+   "roast": "ESPRESSO ROAST"
+  }
+ },
+ {
+  "id": "gio-tumbler",
+  "cat": "merch",
+  "name": "Gio Steel Tumbler 16 oz",
+  "price": 1250,
+  "tag": "+20 ★ bonus",
+  "desc": "Double-wall steel, keeps drinks hot 6 h or cold 12 h. Bring it in for ₱10 off.",
+  "v": {
+   "kind": "tumbler",
+   "color": "#0e6b4e"
+  }
+ },
+ {
+  "id": "gio-tumbler-crema",
+  "cat": "merch",
+  "name": "Crema Tumbler 16 oz",
+  "price": 1250,
+  "desc": "The same tumbler, finished in soft crema with a gold badge.",
+  "v": {
+   "kind": "tumbler",
+   "color": "#efe4d0"
+  }
+ },
+ {
+  "id": "gio-mug",
+  "cat": "merch",
+  "name": "Stoneware Mug 12 oz",
+  "price": 690,
+  "desc": "Hand-glazed in Laguna, with the Gio badge on the side.",
+  "v": {
+   "kind": "ceramic",
+   "color": "#14332b"
+  }
+ }
+]
