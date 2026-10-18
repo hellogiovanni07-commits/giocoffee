@@ -1,8 +1,8 @@
 /* GioCoffee · home page */
-import { boot, $, $$, esc, reduce, cart, store, toast, tilt, IC, MARK, openItem, pickupStore, starsFor } from './common.js?v=12';
-import { byId, art, peso, SIZES, MILKS, SYRUPS, STORES, REWARDS } from './data.js?v=12';
-import { MAP_SVG, pinsHTML, openNow } from './map.js?v=12';
-import { animate, scroll, inView } from '../vendor/motion/motion.esm.js?v=12';
+import { boot, $, $$, esc, reduce, cart, store, toast, tilt, IC, MARK, openItem, pickupStore, starsFor } from './common.js?v=13';
+import { byId, art, peso, SIZES, MILKS, SYRUPS, STORES, REWARDS } from './data.js?v=13';
+import { MAP_SVG, pinsHTML, openNow } from './map.js?v=13';
+import { animate, scroll, inView } from '../vendor/motion/motion.esm.js?v=13';
 
 const introDone = boot('index.html');
 $('#revL').innerHTML = IC.arrowL; $('#revR').innerHTML = IC.arrowR;
@@ -35,7 +35,8 @@ function heroShow(p, first = false) {
   hero.style.setProperty('--hero-bg', p.bg); $('meta[name=theme-color]').content = p.bg;
   $('#heroItem').textContent = it.name; $('#heroDesc').textContent = it.desc; $('#heroPrice').textContent = peso(it.price);
   $('#heroPoster').alt = `${it.name} in a GioCoffee cup`; $('#heroCanvas').setAttribute('aria-label', `${it.name} in 3D. Drag to spin it.`);
-  $$('[data-pick]').forEach(b => b.setAttribute('aria-checked', PICKS[+b.dataset.pick] === p));
+  $$('[data-pick]').forEach(b => { const on = PICKS[+b.dataset.pick] === p; b.setAttribute('aria-checked', on); b.tabIndex = on ? 0 : -1; });
+  $('#heroOrder').setAttribute('aria-label', `Order the ${it.name}, ${peso(it.price)}`);
   ticket(p, !first);
   if (heroStage) heroStage.show(it.v, { name: heroName, assemble: !reduce });
   else $('#heroPoster').src = art(p.id);
@@ -70,10 +71,10 @@ if (!reduce) inView('.pour', () => { pourT = setInterval(pourNext, 3200); return
    FALL STACK: cards stack as you scroll
    ========================================================= */
 const FEATS = [
-  { id: 'pumpkin-cream-cold-brew', fb: '#a4481a', fc: '#c4652f', dark: true, st: 'Back by request', h: 'Pumpkin Cream Cold Brew', p: 'Our 20-hour cold brew under a velvet cap of kalabasa cold foam and a dust of cinnamon. The -ber months, poured over ice.', hand: 'the one everyone asks for' },
+  { id: 'pumpkin-cream-cold-brew', fb: '#a4481a', fc: '#c4652f', dark: true, st: 'Back by request', h: 'Pumpkin Cream Cold Brew', p: 'Our 20-hour cold brew under a velvet cap of kalabasa cold foam and a dust of cinnamon. The ‑ber months, poured over ice.', hand: 'the one everyone asks for' },
   { id: 'salted-caramel-frappe', fb: '#f1dcc0', fc: '#e6c497', st: 'New', h: 'Salted Caramel Frappé', p: 'Coffee blended with caramel and ice, piled with whipped cream and a sea-salt caramel drizzle that runs down the inside of the cup.', hand: 'drizzle on the inside, on purpose' },
   { id: 'toasted-hazelnut-mocha', fb: '#7d1d26', fc: '#a3323d', dark: true, st: 'First red cup', h: 'Toasted Hazelnut Mocha', p: 'Espresso, dark Davao cocoa and roasted hazelnut, in the first red cup of the season. Christmas starts in September here, so we’re on time.', hand: 'Pasko na, basically' },
-  { id: 'ensaymada', fb: '#14332b', fc: '#24493d', dark: true, st: 'Pair it', h: 'Ube Ensaymada', p: 'A soft brioche coil with ube butter, sugar and grated queso, baked at 5th Ave every morning and at every store by 9. Best next to a hot Spanish Latte.', hand: 'baked this morning' }
+  { id: 'ensaymada', fb: '#14332b', fc: '#24493d', dark: true, st: 'Pair it', h: 'Ube Ensaymada', p: 'A soft brioche coil with ube butter, sugar and grated queso, baked at 5th Ave every morning and at every store from opening. Best next to a hot Spanish Latte.', hand: 'baked this morning' }
 ];
 $('#feats').innerHTML = FEATS.map((f, i) => { const it = byId(f.id); return `<article class="feat${f.dark ? ' dark' : ''}" style="--fb:${f.fb};--fc:${f.fc};--i:${i}">
   <div class="feat__art"><span class="sticker">${esc(f.st)}</span><img src="${art(f.id)}" alt="${esc(it.name)}" loading="lazy" width="440" height="440"></div>
@@ -101,7 +102,7 @@ const BASES = [
   { id: 'mocha', name: 'Caffè Mocha', price: 190, kcal: 360, shots: 2, milk: true, temps: ['hot', 'iced'], cocoa: true, caf: 25, top: 'whip' },
   { id: 'coldbrew', name: 'Cold Brew', price: 170, kcal: 5, shots: 0, milk: false, temps: ['iced'], caf: 205, brew: true },
   { id: 'frappe', name: 'Frappé', price: 215, kcal: 380, shots: 1, milk: true, temps: ['blended'], caf: 15 },
-  { id: 'matcha', name: 'Matcha Latte', price: 195, kcal: 200, shots: 0, milk: true, temps: ['hot', 'iced'], matcha: true, caf: 80, top: 'heart' }
+  { id: 'matcha', name: 'Matcha Latte', price: 185, kcal: 200, shots: 0, milk: true, temps: ['hot', 'iced'], matcha: true, caf: 80, top: 'heart' }
 ];
 const TEMPS = { hot: 'Hot', iced: 'Iced', blended: 'Blended' };
 const B = { base: BASES[0], temp: 'hot', size: 'medio', milk: 'whole', syrup: 'none', shots: 2, name: heroName };
@@ -212,7 +213,7 @@ $('#bAdd').addEventListener('click', e => {
   const t = B.temp, b = B.base.id;
   const artId = t === 'blended' ? (B.base.cocoa ? 'mocha-frappe' : B.base.matcha ? 'matcha-cream-frappe' : 'caramel-frappe')
     : t === 'iced' ? ({ americano: 'iced-americano', coldbrew: 'cold-brew', matcha: 'iced-matcha-latte', macchiato: 'iced-caramel-macchiato' }[b] || 'iced-latte')
-    : ({ mocha: 'caffe-mocha', macchiato: 'caramel-macchiato', latte: 'spanish-latte' }[b] || 'americano');
+    : ({ mocha: 'caffe-mocha', macchiato: 'caramel-macchiato', latte: 'cafe-latte', matcha: 'cafe-latte' }[b] || 'americano');
   cart.add(artId, { price: price(), title: `${TEMPS[t]} ${B.base.name}, your way`, note: $('#bSum').textContent.split(' · ')[0], name: B.name }, $('#buildCanvas').parentElement);
   // the lid goes on, then the cup opens up again for the next one
   if (bStage && t === 'hot' && !reduce) { bStage.show({ ...spec(), open: false }, { name: B.name, scale: pick(SIZES, B.size).scale, assemble: true }); clearTimeout(bt); bt = setTimeout(() => bStage.show(spec(), { name: B.name, scale: pick(SIZES, B.size).scale, pop: false }), 2600); }
@@ -222,7 +223,7 @@ syncBuilder(false);
 /* ---------- 3D after the intro so it never fights first paint ---------- */
 introDone.then(async () => {
   try {
-    const { GioStage } = await import('./gio3d.js?v=12');
+    const { GioStage } = await import('./gio3d.js?v=13');
     heroStage = new GioStage($('#heroCanvas'), { fit: 1.24 });
     await heroStage.show(byId(heroCur.id).v, { name: heroName, assemble: !reduce });
     inView('#buildCanvas', async () => {

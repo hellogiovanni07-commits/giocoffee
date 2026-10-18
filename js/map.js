@@ -1,6 +1,6 @@
 /* Illustrated map of Makati + BGC (not to scale) with labelled store pins. */
-import { STORES } from './data.js?v=12';
-import { IC } from './common.js?v=12';
+import { STORES } from './data.js?v=13';
+import { IC } from './common.js?v=13';
 
 export const MAP_SVG = `<svg class="base" viewBox="0 0 100 70" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
   <defs><pattern id="blk" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#e6efe9"/><rect x=".6" y=".6" width="4.8" height="4.8" rx=".8" fill="#dbe8e0"/></pattern></defs>

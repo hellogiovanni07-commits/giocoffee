@@ -3,14 +3,14 @@
    intro and "Gio", the barista chat. Every page imports this.
    Orders, sign-up and newsletter are demo only.
    ========================================================= */
-import { ITEMS, CATS, byId, art, peso, STORES, SIZES, MILKS, LEVELS, isDrink, milkChoice, defaultNote } from './data.js?v=12';
+import { ITEMS, CATS, byId, art, peso, STORES, SIZES, MILKS, LEVELS, isDrink, milkChoice, defaultNote } from './data.js?v=13';
 /* stars per ₱50 follow the member's level; orders earn per full ₱50 */
 export const lineStars = l => l.reward ? 0 : Math.floor(l.price / 50) * l.q * starRate();
 export const starsFor = price => Math.floor(price / 50) * starRate();
 export const starRate = () => { const y = store.get('yearStars', 0); return (LEVELS.slice().reverse().find(l => y >= l.from) || LEVELS[0]).rate; };
 let fee = 0;
-import { hoursFor, hoursText, openNow } from './map.js?v=12';
-import { si } from './icons.js?v=12';
+import { hoursFor, hoursText, openNow } from './map.js?v=13';
+import { si } from './icons.js?v=13';
 
 export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -45,7 +45,7 @@ function megaPanel() {
   return `<div class="mega" id="mega" role="region" aria-label="Menu preview"><div class="wrap mega__in">
     <div class="mega__cats">${CATS.map(c => { const n = ITEMS.filter(i => i.cat === c.id).length, first = ITEMS.find(i => i.cat === c.id); return `<a href="menu.html#${c.id}"><img src="${art(first.id, true)}" alt="" width="44" height="44" loading="lazy"><span>${esc(c.name)}</span><small>${n}</small></a>`; }).join('')}</div>
     <div class="mega__pop"><p class="mega__h">Ordered most this week</p>${pop.map(id => { const it = byId(id); return `<a href="menu.html#${it.cat}" data-open-item="${id}"><img src="${art(id, true)}" alt="" width="56" height="56" loading="lazy"><span>${esc(it.name)}<small>${peso(it.price)}</small></span></a>`; }).join('')}</div>
-    <a class="mega__feat" href="menu.html#seasonal" style="--fb:${feat.bg}"><img src="${art(feat.id)}" alt="" width="180" height="180" loading="lazy"><span><small>Back for the -ber months</small><b>${esc(feat.name)}</b><i>Order it ahead</i></span></a>
+    <a class="mega__feat" href="menu.html#seasonal" style="--fb:${feat.bg}"><img src="${art(feat.id)}" alt="" width="180" height="180" loading="lazy"><span><small>Back for the ‑ber months</small><b>${esc(feat.name)}</b><i>Order it ahead</i></span></a>
   </div></div>`;
 }
 /* the header's member corner: sign in / join, or your stars once you're in */
@@ -73,7 +73,7 @@ function header(page) {
   const bar = document.createElement('div'); bar.className = 'progress'; bar.id = 'progress'; bar.setAttribute('aria-hidden', 'true');
   const skip = $('.skip'); if (skip) skip.after(bar, h, m); else document.body.prepend(bar, h, m);
   const bur = $('#burger');
-  const setM = o => { m.classList.toggle('open', o); bur.setAttribute('aria-expanded', o); bur.setAttribute('aria-label', o ? 'Close menu' : 'Open menu'); document.body.style.overflow = o ? 'hidden' : ''; $$('main, .ftr').forEach(el => el.inert = o); };
+  const setM = o => { m.classList.toggle('open', o); bur.setAttribute('aria-expanded', o); bur.setAttribute('aria-label', o ? 'Close menu' : 'Open menu'); document.body.style.overflow = o ? 'hidden' : ''; $$('main, .ftr, .skip, .chat-fab, .chat').forEach(el => el.inert = o); };
   addEventListener('keydown', e => { if (e.key === 'Escape' && m.classList.contains('open')) { setM(false); bur.focus(); } });
   bur.addEventListener('click', () => setM(!m.classList.contains('open')));
   m.addEventListener('click', e => { if (e.target.closest('a')) setM(false); });
@@ -86,20 +86,19 @@ function header(page) {
     mega.addEventListener('pointerenter', () => setMega(true));
     mega.addEventListener('pointerleave', () => setMega(false));
   }
-  trig.addEventListener('focus', () => setMega(true));
-  // keyboard: the panel sits right after its trigger in Tab order, then focus carries on along the nav
+  // keyboard: ArrowDown opens the panel and moves into it; Tab simply carries on along the nav
   const inMega = el => el && (el === trig || mega.contains(el));
   [trig, mega].forEach(el => el.addEventListener('focusout', e => { if (!inMega(e.relatedTarget)) setMega(false); }));
   const megaLinks = () => $$('a, button', mega).filter(x => x.offsetParent);
   trig.addEventListener('keydown', e => {
-    if ((e.key === 'Tab' && !e.shiftKey && h.classList.contains('mega-on')) || e.key === 'ArrowDown') { const f = megaLinks()[0]; if (f) { e.preventDefault(); setMega(true); f.focus(); } }
+    if (e.key === 'ArrowDown') { const f = megaLinks()[0]; if (f) { e.preventDefault(); clearTimeout(mt); h.classList.add('mega-on'); trig.setAttribute('aria-expanded', 'true'); f.focus(); } }
   });
   mega.addEventListener('keydown', e => {
     if (e.key !== 'Tab') return; const L = megaLinks(), i = L.indexOf(document.activeElement);
     if (e.shiftKey && i === 0) { e.preventDefault(); trig.focus(); }
     else if (!e.shiftKey && i === L.length - 1) { e.preventDefault(); setMega(false); (trig.nextElementSibling || $('.find', h)).focus(); }
   });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && h.classList.contains('mega-on')) { setMega(false); trig.focus(); } });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && h.classList.contains('mega-on')) { const back = mega.contains(document.activeElement); clearTimeout(mt); h.classList.remove('mega-on'); trig.setAttribute('aria-expanded', 'false'); if (back) trig.focus(); } });
   mega.addEventListener('click', e => { const a = e.target.closest('[data-open-item]'); if (a && page === 'menu.html') { e.preventDefault(); setMega(false); openItem(a.dataset.openItem, a.querySelector('img')); } });
   // hide on scroll down, show on scroll up; progress bar
   let ly = scrollY, tk = false;
@@ -122,10 +121,10 @@ function footer() {
     <div><a class="logo" href="index.html">${MARK}<b>Gio<span>Coffee</span></b></a>
       <p class="ftr__about">Handcrafted coffee from the Philippine highlands and three farms abroad, roasted in Taguig. Brewed for you, by name.</p>
       <div class="ftr__social"><a href="#" aria-label="Instagram">${si('instagram')}</a><a href="#" aria-label="Facebook">${si('facebook')}</a><a href="#" aria-label="TikTok">${si('tiktok')}</a><a href="#" aria-label="YouTube">${si('youtube')}</a><a href="#" aria-label="In-store playlist on Spotify">${si('spotify')}</a></div></div>
-    <div><h2 class="ftr__h">Menu</h2><ul><li><a href="menu.html#seasonal">-ber months</a></li><li><a href="menu.html#hot">Hot coffee</a></li><li><a href="menu.html#cold">Cold coffee</a></li><li><a href="menu.html#frappe">Frappés</a></li><li><a href="menu.html#food">Bakery</a></li><li><a href="menu.html#merch">Beans &amp; merch</a></li></ul></div>
+    <div><h2 class="ftr__h">Menu</h2><ul><li><a href="menu.html#seasonal">‑ber months</a></li><li><a href="menu.html#hot">Hot coffee</a></li><li><a href="menu.html#cold">Cold coffee</a></li><li><a href="menu.html#frappe">Frappés</a></li><li><a href="menu.html#food">Bakery</a></li><li><a href="menu.html#merch">Beans &amp; merch</a></li></ul></div>
     <div><h2 class="ftr__h">GioStars</h2><ul><li><a href="rewards.html">How it works</a></li><li><a href="rewards.html#levels">Levels</a></li><li><a href="index.html#gifts">Gift cards</a></li><li><a href="rewards.html#faq">Rewards FAQ</a></li></ul></div>
     <div><h2 class="ftr__h">Stores</h2><ul>${STORES.map(s => `<li><a href="stores.html#${s.id}">${esc(s.name.replace('GioCoffee ', ''))}</a></li>`).join('')}</ul></div>
-    <div><h2 class="ftr__h">Our coffee</h2><ul><li><a href="index.html#roast">Roasts &amp; origins</a></li><li><a href="index.html#roast">The farms we buy from</a></li><li><a href="brand/">Brand kit</a></li></ul></div>
+    <div><h2 class="ftr__h">Our coffee</h2><ul><li><a href="index.html#roast">Roasts &amp; origins</a></li><li><a href="index.html#origins">The farms we buy from</a></li><li><a href="brand/">Brand kit</a></li></ul></div>
   </div>
   <div class="ftr__pay"><span>We accept</span>${['visa', 'mastercard', 'applepay', 'googlepay'].map(n => si(n)).join('')}<span class="txt">GCash</span><span class="txt">Maya</span><span class="sep"></span><span>Delivery by</span>${si('grab')}${si('foodpanda')}</div>
   <div class="ftr__bottom"><span>© 2026 GioCoffee · Bonifacio Global City, Taguig</span><span>Concept site: names, reviews and prices are samples. Design &amp; build by <a href="https://hellogiovanni07-commits.github.io/portfolio/">Hello Giovanni</a></span></div></div>`;
@@ -150,10 +149,10 @@ export const cart = {
     const it = byId(id); if (!it) return;
     const drink = isDrink(it), name = drink ? (opts.name || '') : '';
     const title = opts.title || it.name, note = opts.note || defaultNote(it);
-    const price = opts.price ?? it.price, reward = !!opts.reward;
+    const price = opts.price ?? it.price, reward = !!opts.reward, cost = opts.cost || 0;
     const key = [id, title, note, name, price].join('|');
     const ex = this.lines.find(l => l.key === key);
-    if (ex) ex.q += opts.q || 1; else this.lines.push({ key, id, title, q: opts.q || 1, price, note, name, reward });
+    if (ex) ex.q += opts.q || 1; else this.lines.push({ key, id, title, q: opts.q || 1, price, note, name, reward, cost });
     store.set('cart', this.lines);
     const done = () => { this.render(); const b = $('#cartBtn'); b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); };
     if (from && !reduce) flyToBag(from, art(id, true), done); else done();
@@ -167,7 +166,7 @@ export const cart = {
     const list = $('#cartList'); if (!list || keepList || $('#drawer')?.classList.contains('done')) return;
     list.innerHTML = this.lines.length ? this.lines.map((l, i) => {
       return `<div class="line"><img src="${art(l.id, true)}" alt="" loading="lazy"><div><h3>${esc(l.title || byId(l.id).name)}</h3><small>${esc(l.note)}${l.name ? ' · for <b style="font-family:var(--hand);font-size:17px;color:var(--green)">' + esc(l.name) + '</b>' : ''}</small>
-        <div class="q"><button type="button" data-q="${i}" data-d="-1" aria-label="One less">−</button><span>${l.q}</span><button type="button" data-q="${i}" data-d="1" aria-label="One more">+</button></div></div><b>${peso(l.q * l.price)}</b></div>`;
+        <div class="q">${l.reward ? `<button type="button" data-q="${i}" data-d="-1" aria-label="Remove this reward and get the stars back">−</button><span>${l.q}</span>` : `<button type="button" data-q="${i}" data-d="-1" aria-label="One less">−</button><span>${l.q}</span><button type="button" data-q="${i}" data-d="1" aria-label="One more">+</button>`}</div></div><b>${peso(l.q * l.price)}</b></div>`;
     }).join('') : `<div class="empty"><img src="${art('iced-spanish-latte')}" alt=""><p><b>Your order is empty</b><br>Pick a drink and we'll write your name on it.</p><a class="btn btn-sm mt-s" href="menu.html">See the menu</a></div>`;
     const t = this.total();
     $('#cartTot').textContent = peso(t + (t ? fee : 0));
@@ -195,15 +194,14 @@ function flyToBag(from, src, done) {
 function lockScroll(on) { const d = document.documentElement; if (on) d.style.setProperty('--sbw', (innerWidth - d.clientWidth) + 'px'); d.classList.toggle('locked', on); }
 /* everything outside an open sheet goes inert, so focus and screen readers stay inside */
 function inertAll(on, keep) {
-  ['main', '.hdr', '.mnav', '.ftr', '.chat-fab', '.chat'].forEach(sel => $$(sel).forEach(el => { if (el !== keep && !el.contains(keep)) el.inert = on; }));
+  ['.skip', 'main', '.hdr', '.mnav', '.ftr', '.chat-fab', '.chat'].forEach(sel => $$(sel).forEach(el => { if (el !== keep && !el.contains(keep)) el.inert = on; }));
 }
 export const pickupStore = () => STORES.find(s => s.id === store.get('store', 'bgc')) || STORES[0];
 function whenText(mode) {
-  const st = pickupStore();
-  if (mode === 'Delivery') return 'Delivered by Grab or foodpanda in about 30 minutes, ₱49 delivery fee.';
+  const st = pickupStore(), [o, t] = openNow(st);
+  if (!o) return `${st.short} is closed right now (${t.toLowerCase()}). ${mode === 'Delivery' ? 'Delivery starts when it opens, ₱49 delivery fee.' : mode === 'Drive-thru' ? 'The drive-thru window opens with the store.' : 'Your order will be ready when it opens.'}`;
+  if (mode === 'Delivery') return `Delivered from ${st.short} by Grab or foodpanda in about 30 minutes, ₱49 delivery fee.`;
   if (mode === 'Drive-thru' && st.id === 'bgc') return 'Drive-thru at 5th Ave: it will be at the window in about 6 minutes.';
-  const [o, t] = openNow(st);
-  if (!o) return `${st.short} is closed right now (${t.toLowerCase()}). Your order will be ready when it opens.`;
   return `Ready in about ${st.wait} minutes at ${st.short}.`;
 }
 function drawer() {
@@ -232,7 +230,7 @@ function drawer() {
   s.addEventListener('click', () => { if (d.classList.contains('on')) open(false); closeModal(); });
   addEventListener('keydown', e => { if (e.key === 'Escape') { if (d.classList.contains('on')) open(false); closeModal(); } });
   d.addEventListener('click', e => {
-    const b = e.target.closest('[data-q]'); if (b) { const i = +b.dataset.q, dd = b.dataset.d, l = cart.lines[i]; l.q += +dd; const gone = l.q < 1; if (gone) cart.lines.splice(i, 1); cart.save(); (gone ? $('#cartX') : $(`[data-q="${i}"][data-d="${dd}"]`, d))?.focus(); }
+    const b = e.target.closest('[data-q]'); if (b) { const i = +b.dataset.q, dd = b.dataset.d, l = cart.lines[i]; if (l.reward && +dd > 0) return; l.q += +dd; const gone = l.q < 1; if (gone) { cart.lines.splice(i, 1); if (l.reward && l.cost) { store.set('stars', store.get('stars', 0) + l.cost); refreshMember(); dispatchEvent(new Event('gio:stars')); toast(`${l.cost} ★ back on your card`); } } cart.save(); (gone ? $('#cartX') : $(`[data-q="${i}"][data-d="${dd}"]`, d))?.focus(); }
     const p = e.target.closest('.pickup button'); if (p && !p.disabled) { setMode(p.textContent); cart.render(); }
     if (e.target.closest('#doneBtn')) open(false);
   });
@@ -240,14 +238,14 @@ function drawer() {
     if (mode === 'Drive-thru' && pickupStore().id !== 'bgc') setMode('Pick up');
     const stars = cart.lines.reduce((a, l) => a + lineStars(l), 0), first = cart.lines.find(l => isDrink(byId(l.id))) || cart.lines[0], name = (cart.lines.find(l => l.name) || {}).name || store.get('name', '');
     const st = pickupStore(), [isOpen, hrs] = openNow(st), at = new Date(Date.now() + (mode === 'Delivery' ? 30 : st.wait) * 60000);
-    const when = mode !== 'Delivery' && !isOpen ? `when ${esc(st.short)} opens (${esc(hrs.replace(/^Opens /, '').toLowerCase())})` : `at about <b>${at.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' })}</b>`;
+    const when = !isOpen ? `when ${esc(st.short)} opens (${esc(hrs.replace(/^Opens /, '').toLowerCase())})` : `at about <b>${at.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' })}</b>`;
     const member = store.get('member', false);
     if (member) { store.set('stars', store.get('stars', 0) + stars); store.set('yearStars', store.get('yearStars', 0) + stars); refreshMember(); dispatchEvent(new Event('gio:stars')); }
     const no = 400 + Math.floor(Math.random() * 500);
     $('#cartList').innerHTML = `<div class="done-card">
       <div class="done-card__cup"><img src="${art(first.id)}" alt="" width="220" height="220">${isDrink(byId(first.id)) ? `<span class="done-card__name">${esc(name || 'your cup')}</span>` : ''}</div>
       <p class="done-card__no">Order #0${no}</p>
-      <h3>${mode === 'Delivery' ? 'On its way' : `See you at ${esc(st.short)}`}${name ? ', ' + esc(name) : ''}.</h3>
+      <h3>${mode === 'Delivery' ? (isOpen ? 'On its way' : 'Booked for opening') : `See you at ${esc(st.short).replace(' · ', '\u00a0·\u00a0')}`}${name ? ', ' + esc(name) : ''}.</h3>
       <p>${mode === 'Delivery' ? `Your rider picks it up from ${esc(st.short)}` : mode === 'Drive-thru' ? 'It will be at the drive-thru window' : 'It will be on the pick-up shelf, name facing out,'} ${when}.</p>
       <p class="done-card__stars">${member ? `+${stars} ★ added to your GioStars` : `<a href="rewards.html#join">Join GioStars</a> to keep the ${stars} ★ from orders like this`}</p>
       <button class="btn btn-lg btn-block" type="button" id="doneBtn">Done</button>
@@ -319,7 +317,7 @@ export async function openItem(id, fromEl = null) {
   $('#mAdd').addEventListener('click', e => { cart.add(id, { price: price(), note: note(), name: drink ? name : '' }, img); closeModal(); });
   // live 3D replaces the still once loaded
   try {
-    const { GioStage } = await import('./gio3d.js?v=12');
+    const { GioStage } = await import('./gio3d.js?v=13');
     if (!modalStage) modalStage = new GioStage(cv, { fit: 1.3 });
     modalStage.resume(); await modalStage.show(it.v, { name, assemble: !reduce });
     img.style.opacity = 0;
@@ -417,7 +415,8 @@ function parseAdd(t) {
   return { it: best.it, q: Math.min(9, +(m[1] && (NUM[m[1]] || m[1])) || 1) };
 }
 const INTENTS = [
-  [/\b(no coffee|caffeine ?free|decaf|for kids|without coffee|walang kape)\b/, () => ({ text: 'No coffee at all in these:', items: ['ube-latte', 'strawberry-cream-frappe', 'mango-graham-frappe'] })],
+  [/\bdecaf\w*\b/, () => ({ text: 'No decaf espresso yet, sorry. These have no coffee at all:', items: ['ube-latte', 'strawberry-cream-frappe', 'mango-graham-frappe'] })],
+  [/\b(no coffee|caffeine ?free|for kids|without coffee|walang kape)\b/, () => ({ text: 'No coffee at all in these:', items: ['ube-latte', 'strawberry-cream-frappe', 'mango-graham-frappe'] })],
   [/\b(not (too |so )?sweet|less sweet|unsweet\w*|no sugar|walang asukal|hindi matamis)\b/, () => ({ text: 'Iced and not too sweet:', items: ['cold-brew', 'iced-americano', 'iced-matcha-latte'] })],
   [/\b(iced|cold)\b.*\bsweet\b|\bsweet\b.*\b(iced|cold)\b/, () => ({ text: 'Iced and on the sweet side:', items: ['iced-spanish-latte', 'iced-caramel-macchiato', 'ube-latte'] })],
   [/\b(deliver\w*|delivery|grab|foodpanda|rider)\b/, () => `Yes. Pick Delivery in your order and Grab or foodpanda brings it in about 30 minutes, for a ₱49 fee.`],
@@ -429,8 +428,8 @@ const INTENTS = [
   [/\b(where|locations?|stores?|address|near|branch\w*|saan)\b/, () => `Four stores: two in BGC (5th Ave Reserve with a drive-thru, and Uptown, open 24 hours) and two in Makati (Legazpi Village and Rockwell). <a href="stores.html">Open the store finder</a>.`],
   [/\b(gio ?stars?|stars?|rewards?|points?|loyal\w*|members?)\b/, () => `GioStars: <b>2 ★ for every ₱50</b> (3 ★ at Gold, 4 ★ at Reserve). 25 ★ = an extra shot or a size upgrade, 100 ★ = any handcrafted drink, 150 ★ = a pastry and a drink, 200 ★ = beans or a mug. <a href="rewards.html">Join, it's free</a>.`],
   [/\b(re?c+o?m+e?n+d\w*|suggest\w*|best|popular|what should|bestsellers?|favou?rites?)\b/, () => ({ text: 'Most ordered this week:', items: ['iced-spanish-latte', 'caramel-macchiato', 'java-chip-frappe'] })],
-  [/\b(seasonal|season|ber|christmas|pasko|new|pumpkin|kalabasa|maple)\b/, () => ({ text: 'The -ber months menu, here till December:', items: ['maple-oat-latte', 'pumpkin-cream-cold-brew', 'salted-caramel-frappe', 'toasted-hazelnut-mocha'] })],
-  [/\b(cheap|budget|price|prices|how much|magkano)\b/, () => ({ text: 'Drinks start at ₱140. Good-value picks:', items: ['americano', 'iced-americano', 'calamansi-refresher'] })],
+  [/\b(seasonal|season|ber|christmas|pasko|new|pumpkin|kalabasa|maple)\b/, () => ({ text: 'The ‑ber months menu, here till December:', items: ['maple-oat-latte', 'pumpkin-cream-cold-brew', 'salted-caramel-frappe', 'toasted-hazelnut-mocha'] })],
+  [/\b(cheap|budget|price|prices|how much|magkano)\b/, () => ({ text: 'Drinks start at ₱120 for a piccolo. Good-value picks:', items: ['americano', 'iced-americano', 'calamansi-refresher'] })],
   [/\b(wi ?fi|internet|work|study|laptop|socket|outlet)\b/, () => `Every store has free Wi-Fi. Legazpi Village has a quiet room, and Uptown is open 24 hours for late study sessions.`],
   [/\b(name|spell|write)\b/, () => `Yes, your barista writes your name on every cup. Type it in the hero or the drink builder and watch it go on the 3D cup.`],
   [/\b(order|cart|checkout|buy|bag)\b/, () => `Tap the bag at the top right to see your order. Pick-up at ${pickupStore().short} is ready in about ${pickupStore().wait} minutes.`],
@@ -440,11 +439,11 @@ const INTENTS = [
 function chat() {
   const fab = document.createElement('button'); fab.className = 'chat-fab'; fab.type = 'button'; fab.setAttribute('aria-label', 'Chat with Gio, our barista');
   fab.innerHTML = `${MARK}<span class="bub" aria-hidden="true">ask Gio, our barista</span>`;
-  setTimeout(() => fab.classList.add('seen'), 9000);
+  setTimeout(() => fab.classList.add('seen'), 5000);
   const box = document.createElement('section'); box.className = 'chat'; box.setAttribute('aria-label', 'Chat with Gio');
   box.innerHTML = `<div class="chat__h"><span class="av">${MARK}</span><div><b>Gio</b><small>Barista bot · replies instantly</small></div><button class="x" type="button" aria-label="Close chat">${IC.x}</button></div>
     <div class="chat__log" id="chatLog" aria-live="polite"></div>
-    <div class="chat__quick">${['Recommend a drink', '-ber months menu', 'Hours today', 'How do stars work?', 'No coffee please'].map(q => `<button type="button">${q}</button>`).join('')}</div>
+    <div class="chat__quick">${['Recommend a drink', '‑ber months menu', 'Hours today', 'How do stars work?', 'No coffee please'].map(q => `<button type="button">${q}</button>`).join('')}</div>
     <form class="chat__f"><input id="chatIn" placeholder="Ask about drinks, stores, stars…" autocomplete="off" aria-label="Message"><button type="submit" aria-label="Send">${IC.send}</button></form>`;
   document.body.append(fab, box);
   const log = $('#chatLog', box);
@@ -459,7 +458,7 @@ function chat() {
     setTimeout(() => {
       ty.remove();
       const t = norm(q), add = parseAdd(t), sc = scoreItems(q), found = sc.map(x => x.it);
-      if (add) { cart.add(add.it.id, { q: add.q, name: store.get('name', '') }); say(`Done! ${add.q === 1 ? 'One' : add.q} <b>${esc(add.it.name)}</b> ${add.q === 1 ? 'is' : 'are'} in your order.`); return; }
+      if (add) { cart.add(add.it.id, { q: add.q, name: store.get('name', '') }); say(`Done! ${add.q === 1 ? 'One' : add.q} <b>${esc(add.q === 1 || /s$/.test(add.it.name) ? add.it.name : add.it.name + 's')}</b> ${add.q === 1 ? 'is' : 'are'} in your order.`); return; }
       const ps = /\b(how much|price|magkano)\b/.test(t) && scoreItems(t.replace(/\b(how much|price of|price|magkano|is|are|the|a|an|ang|ba|for)\b/g, ' '))[0];
       if (ps && ps.all) { const it = ps.it; say(`A ${isDrink(it) ? 'medio ' : ''}<b>${esc(it.name)}</b> is ${peso(it.price)}.`, 'bot', [it.id]); return; }
       for (const [re, fn] of INTENTS) if (re.test(t)) { const r = fn(); if (typeof r === 'string') say(r); else say(r.text, 'bot', r.items); return; }

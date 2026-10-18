@@ -1,6 +1,6 @@
 /* GioCoffee · menu page */
-import { boot, $, $$, esc, cart, store, reveal, openItem, IC, reduce } from './common.js?v=12';
-import { ITEMS, CATS, art, peso, milkChoice } from './data.js?v=12';
+import { boot, $, $$, esc, cart, store, reveal, openItem, IC, reduce } from './common.js?v=13';
+import { ITEMS, CATS, art, peso, milkChoice } from './data.js?v=13';
 
 boot('menu.html');
 /* mid-tone stages: calm enough that a white cup still reads against them */
@@ -27,7 +27,7 @@ const card = (it, k, c) => `<article class="card" data-tilt style="--cbg:${BG[c.
 
 let first = true;
 function render() {
-  const fold = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const fold = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/caff/g, 'caf');
   const t = fold($('#q').value.trim());
   const keep = it => (!t || fold(it.name + ' ' + it.desc + ' ' + (it.tag || '')).includes(t)) && [...on].every(f => FILTERS.find(x => x.id === f).test(it));
   // FLIP: remember where each card was before the list changes
@@ -39,7 +39,7 @@ function render() {
     return `<section class="menu-group" id="${c.id}" aria-labelledby="g-${c.id}"><h2 id="g-${c.id}">${esc(c.name)}${c.hand ? `<small>${esc(c.hand)}</small>` : ''}</h2>
       <div class="grid">${items.map((it, k) => card(it, k, c)).join('')}</div></section>`;
   }).join('');
-  $('#groups').innerHTML = html || `<p class="no-res">Nothing matches${t ? ` “${esc(t)}”` : ''} ${on.size ? ' with these filters' : ''}. Try “latte”, “ube”, or clear a filter.</p>`;
+  $('#groups').innerHTML = html || `<p class="no-res">Nothing matches${t ? ` “${esc(t)}”` : ''}${on.size ? ' with these filters' : ''}. Try “latte”, “ube”, or clear a filter.</p>`;
   $('#count').textContent = `${n} of ${ITEMS.length} items`;
   if (!reduce && !first) $$('.card').forEach(c => {
     const a = before.get(c.dataset.id), b = c.getBoundingClientRect();
@@ -62,7 +62,7 @@ $('#cats').addEventListener('click', e => {
 let spy;
 function watch() {
   spy && spy.disconnect();
-  spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) $$('[data-cat]').forEach(x => x.setAttribute('aria-pressed', x.dataset.cat === e.target.id)); }), { rootMargin: '-35% 0px -60% 0px' });
+  spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { $$('[data-cat]').forEach(x => x.setAttribute('aria-pressed', x.dataset.cat === e.target.id)); const c = $(`#cats [data-cat="${e.target.id}"]`), bar = $('#cats'); if (c && bar && bar.scrollWidth > bar.clientWidth) bar.scrollTo({ left: c.offsetLeft - (bar.clientWidth - c.offsetWidth) / 2, behavior: reduce ? 'auto' : 'smooth' }); } }), { rootMargin: '-35% 0px -60% 0px' });
   $$('.menu-group').forEach(g => spy.observe(g));
 }
 
@@ -71,7 +71,7 @@ $('#groups').addEventListener('click', e => {
   const c = e.target.closest('[data-item]'); if (c) openItem(c.dataset.item, c.querySelector('img'));
 });
 $('#askGio').addEventListener('click', () => $('.chat-fab').click());
-// hero: the four -ber months cups on the stand open in 3D
+// hero: the four ‑ber months cups on the stand open in 3D
 $('.mh').addEventListener('click', e => { const b = e.target.closest('[data-item]'); if (b) openItem(b.dataset.item, b.querySelector('img')); });
 render();
 if (location.hash) setTimeout(() => $(location.hash)?.scrollIntoView(), 250);

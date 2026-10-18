@@ -64,7 +64,7 @@ body::after{content:"";position:fixed;inset:0;z-index:250;pointer-events:none;op
 /* crema: coffee-ring stains · mint: leaf and bean print · paper: warm vignettes */
 .bg-crema{position:relative;isolation:isolate;background-color:var(--crema);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='560'%3E%3Cg fill='none' stroke='%237a4a22' stroke-opacity='.08'%3E%3Ccircle cx='120' cy='130' r='62' stroke-width='5'/%3E%3Ccircle cx='120' cy='130' r='55' stroke-width='1.5'/%3E%3Ccircle cx='420' cy='400' r='84' stroke-width='6' stroke-dasharray='190 30 60 20'/%3E%3Ccircle cx='420' cy='400' r='76' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E")}
 .bg-mint{position:relative;isolation:isolate;background-color:var(--mint-2);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='none' stroke='%230e6b4e' stroke-opacity='.1' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M40 60q18-30 40 0q-22 30-40 0zM40 60h40'/%3E%3Cg transform='translate(170 150) rotate(40)'%3E%3Cellipse rx='10' ry='14'/%3E%3Cpath d='M0-13c-5 7 5 13 0 26'/%3E%3C/g%3E%3Cpath d='M150 40q14-24 32 0q-18 24-32 0z'/%3E%3Cpath d='M60 190q14-24 32 0q-18 24-32 0z'/%3E%3C/g%3E%3C/svg%3E")}
-main>.sec:not(.bg-crema):not(.bg-mint):not(.rewards),main>.wrap{background-image:radial-gradient(70% 50% at 100% 0,rgba(201,161,91,.1),transparent 70%),radial-gradient(60% 50% at 0 100%,rgba(14,107,78,.06),transparent 70%)}
+main>.sec:not(.bg-crema):not(.bg-mint):not(.rewards){background-image:radial-gradient(70% 50% at 100% 0,rgba(201,161,91,.1),transparent 70%),radial-gradient(60% 50% at 0 100%,rgba(14,107,78,.06),transparent 70%)}
 .rewards{background:radial-gradient(60% 70% at 85% 10%,#21503f,transparent 70%),radial-gradient(50% 60% at 0 100%,#0d241e,transparent 70%),var(--house)}
 .rewards::after{opacity:.06}
 .menu-bar{background:rgba(251,248,242,.8)}
@@ -99,7 +99,6 @@ main>.sec:not(.bg-crema):not(.bg-mint):not(.rewards),main>.wrap{background-image
   radial-gradient(80% 70% at 50% 18%,#fff 0,var(--cbg,var(--mint)) 72%)}
 .card__art::before{content:"";position:absolute;inset:0;border-radius:inherit;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cg fill='none' stroke='%2314332b' stroke-width='1.5'%3E%3Cg transform='translate(40 44) rotate(-30)'%3E%3Cellipse rx='10' ry='14'/%3E%3Cpath d='M0-13c-5 7 5 13 0 26'/%3E%3C/g%3E%3Cg transform='translate(122 112) rotate(40)'%3E%3Cellipse rx='9' ry='12'/%3E%3Cpath d='M0-11c-4 6 4 11 0 22'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");width:auto;aspect-ratio:auto;transform:none;background-color:transparent}
 .card__art img{position:relative;z-index:1;width:88%;height:88%;filter:drop-shadow(0 18px 18px rgba(20,51,43,.22))}
-.card .tagx{transform:translateZ(30px)}
 .card__b,.card__f{transform:translateZ(18px)}
 @media (hover:hover) and (pointer:fine){
   .card:hover{transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-6px);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 40px 60px -30px rgba(20,51,43,.5)}
@@ -373,3 +372,21 @@ body:has(.mnav.open) .hdr .find,body:has(.mnav.open) .hdr .cart-btn{color:var(--
 /* home hero: the still cup is only a fallback for when the 3D can't run (no stale cup behind the live one) */
 .js .hero__poster{opacity:0;visibility:hidden}
 .js .hero__poster.fallback{opacity:1;visibility:visible}
+
+/* audit fixes, round 2 */
+.card .tagx{z-index:3;transform:translateZ(60px)}
+/* display headings: the full stop tucks in under the heavy letters */
+.fs{margin-left:-.06em}
+/* menu headline fits on two lines beside the stand */
+.menu-hero h1{font-size:clamp(44px,4.7vw,74px)}
+/* phone numbers and prices never break */
+.nowrap{white-space:nowrap}
+.map__note{color:#46594f}
+.msg .mini button{min-height:44px;padding:0 14px}
+.reward .btn{white-space:nowrap}
+@media (max-width:520px){
+  .reward .btn{font-size:13px;padding:0 14px}
+  .sth__chip.c1{top:0;left:0}.sth__chip.c2{top:0;right:0}
+  .ftr{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+}
+@media (max-width:900px){.builder__stage{height:38svh;min-height:260px}}

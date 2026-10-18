@@ -1,7 +1,7 @@
 /* GioCoffee · stores page */
-import { boot, $, $$, esc, MARK, store, toast, reduce } from './common.js?v=12';
-import { STORES } from './data.js?v=12';
-import { MAP_SVG, pinsHTML, openNow, hoursText } from './map.js?v=12';
+import { boot, $, $$, esc, MARK, store, toast, reduce } from './common.js?v=13';
+import { STORES } from './data.js?v=13';
+import { MAP_SVG, pinsHTML, openNow, hoursText } from './map.js?v=13';
 
 boot('stores.html');
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -10,9 +10,9 @@ const on = new Set(); let cur = null;
 $('#map').insertAdjacentHTML('afterbegin', MAP_SVG + pinsHTML());
 $('#filters').innerHTML = FILTERS.map(([id, n]) => `<button class="filter" type="button" data-f="${esc(id)}" aria-pressed="false">${esc(n)}</button>`).join('');
 const openCount = STORES.filter(s => openNow(s)[0]).length;
-$('#nowLine').textContent = `It's ${new Date().toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' })}: ${openCount} of ${STORES.length} stores are open right now.`;
+$('#nowLine').textContent = `It's ${new Date().toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' })}: ${openCount} of ${STORES.length} stores ${openCount === 1 ? 'is' : 'are'} open right now.`;
 // hero: the four stores with their live status; picking one opens it in the finder below
-$('#sthStores').innerHTML = STORES.map(s => { const [o, t] = openNow(s); return `<button class="sth__store" type="button" data-store="${s.id}" data-hero><span><b>${esc(s.short)}</b><small>${esc(s.area)}</small></span><em class="${o ? 'on' : 'off'}">${esc(t)}</em></button>`; }).join('');
+$('#sthStores').innerHTML = STORES.map(s => { const [o, t] = openNow(s); return `<button class="sth__store" type="button" data-store="${s.id}" data-hero="1"><span><b>${esc(s.short)}</b><small>${esc(s.area)}</small></span><em class="${o ? 'on' : 'off'}">${esc(t)}</em></button>`; }).join('');
 const passes = s => [...on].every(f => f === 'open' ? openNow(s)[0] : s.tags.includes(f));
 function list() {
   const ss = STORES.filter(passes);
@@ -24,7 +24,7 @@ function pick(id, scroll) {
   cur = id; const s = STORES.find(x => x.id === id); const [o, t] = openNow(s), today = new Date().getDay();
   $$('[data-store]:not([data-hero])').forEach(b => b.setAttribute('aria-pressed', b.dataset.store === id));
   const mine = store.get('store', 'bgc') === id;
-  $('#detail').innerHTML = `<span class="open-badge${o ? '' : ' closed'}">${t}</span><h2>${esc(s.name)}</h2><small style="color:var(--muted)">${esc(s.addr)} · <a href="tel:${s.phone.replace(/\s/g, '')}">${esc(s.phone)}</a></small>
+  $('#detail').innerHTML = `<span class="open-badge${o ? '' : ' closed'}">${t}</span><h2>${esc(s.name)}</h2><small style="color:var(--muted)">${esc(s.addr)} · <a class="nowrap" href="tel:${s.phone.replace(/\s/g, '')}">${esc(s.phone)}</a></small>
     <div class="hours">${DAYS.map((d, i) => { const h = (i === 0 || i === 6) ? s.wk : s.open; return `<span class="${i === today ? 'today' : ''}">${d}${i === today ? ' (today)' : ''}</span><span class="${i === today ? 'today' : ''}">${hoursText(h)}</span>`; }).join('')}</div>
     <div class="hero__cta" style="margin-top:0"><button class="btn btn-sm" type="button" data-pickup="${s.id}">${mine ? 'Your pick-up store ✓' : 'Order ahead here'}</button><a class="btn btn-line btn-sm" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.addr)}" target="_blank" rel="noopener">Directions</a></div>
     <p style="font-size:13px;color:var(--muted);margin-top:10px">${o ? `Order-ahead wait right now: about ${s.wait} minutes.` : `Closed now. Orders placed here are made when it opens.`}</p>`;
@@ -118,7 +118,7 @@ pick(STORES.some(s => s.id === h) ? h : store.get('store', 'bgc'));
   const end = () => { if (!drag) return; drag = null; spin.classList.remove('drag'); settle(); };
   spin.addEventListener('pointerup', end); spin.addEventListener('pointercancel', end);
   spin.addEventListener('keydown', e => {
-    const k = { ArrowLeft: 1, ArrowDown: 1, ArrowRight: -1, ArrowUp: -1 }[e.key];
+    const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key];
     if (k) { e.preventDefault(); touched = true; set(Math.round(pos) + k * Math.max(1, N / 48)); announce(); }
     else if (e.key === 'Home') { e.preventDefault(); set(0); announce(); }
   });

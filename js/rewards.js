@@ -1,6 +1,6 @@
 /* GioCoffee · rewards page */
-import { boot, $, $$, esc, store, toast, tilt, IC, reduce, cart, refreshMember } from './common.js?v=12';
-import { REWARDS, LEVELS, art } from './data.js?v=12';
+import { boot, $, $$, esc, store, toast, tilt, IC, reduce, cart, refreshMember } from './common.js?v=13';
+import { REWARDS, LEVELS, art } from './data.js?v=13';
 
 boot('rewards.html');
 const S = { member: store.get('member', false), name: store.get('name', ''), stars: store.get('stars', 0), year: store.get('yearStars', 0) };
@@ -40,7 +40,7 @@ $('#rewardsList').addEventListener('click', e => {
   const b = e.target.closest('[data-redeem]'); if (!b || b.disabled) return;
   const r = REWARDS.find(x => x.stars === +b.dataset.redeem); S.stars = store.get('stars', S.stars); if (S.stars < r.stars) { all(); return; }
   S.stars -= r.stars; store.set('stars', S.stars); const keep = b.dataset.redeem;
-  cart.add(r.item, { price: 0, reward: true, title: `Reward: ${r.line}`, note: `${r.note} · ${r.stars} ★ redeemed` }, b.closest('.reward'));
+  cart.add(r.item, { price: 0, reward: true, cost: r.stars, title: `Reward: ${r.line}`, note: `${r.note} · ${r.stars} ★ redeemed` }, b.closest('.reward'));
   all(); const nb = $(`[data-redeem="${keep}"]`); (nb && !nb.disabled ? nb : $('#rewardsList .btn:not([disabled])') || $('#h-redeem')).focus?.();
 });
 // card follows the pointer a little
@@ -48,11 +48,14 @@ if (matchMedia('(hover: hover) and (pointer: fine)').matches) tilt($('#member'),
 
 // join / sign in
 const tabs = [['#tJoin', '#joinForm'], ['#tSign', '#signForm']];
-const showTab = i => tabs.forEach(([t, f], k) => { $(t).setAttribute('aria-selected', k === i); $(f).hidden = k !== i; });
+const showTab = i => tabs.forEach(([t, f], k) => { $(t).setAttribute('aria-selected', k === i); $(t).tabIndex = k === i ? 0 : -1; $(f).hidden = k !== i; });
+showTab(0);
 $('#tJoin').addEventListener('click', () => showTab(0)); $('#tSign').addEventListener('click', () => showTab(1));
 $('.seg').addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const i = $('#tJoin').getAttribute('aria-selected') === 'true' ? 1 : 0; showTab(i); $(tabs[i][0]).focus(); } });
 if (location.hash === '#signin') { showTab(1); setTimeout(() => $('#join').scrollIntoView(), 200); }
-document.addEventListener('click', e => { if (e.target.closest('[data-signin]')) { showTab(1); } });
+const goSign = () => { showTab(1); $('#join').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); setTimeout(() => $('#tSign').focus({ preventScroll: true }), reduce ? 0 : 400); };
+document.addEventListener('click', e => { const a = e.target.closest('[data-signin], a[href$="#signin"]'); if (a) { e.preventDefault(); goSign(); } });
+addEventListener('hashchange', () => { if (location.hash === '#signin') goSign(); });
 $('#jName').value = S.name;
 $('#jName').addEventListener('input', e => { $('#mName').textContent = e.target.value.trim() || 'Your name'; });
 $('#joinForm').addEventListener('submit', e => {

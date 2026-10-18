@@ -7,7 +7,7 @@ export const ART_VERSION = 5;
 export const art = (id, sm) => `assets/3d/${id}${sm ? '-sm' : ''}.webp?v=${ART_VERSION}`;
 
 export const CATS = [
-  { id: 'seasonal', name: '-ber months', hand: 'here till December' },
+  { id: 'seasonal', name: '‑ber months', hand: 'here till December' },
   { id: 'hot', name: 'Hot coffee' },
   { id: 'cold', name: 'Cold coffee' },
   { id: 'frappe', name: 'Frappés' },
