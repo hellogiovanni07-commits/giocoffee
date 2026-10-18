@@ -43,16 +43,16 @@
 .kv.xr .kv__copy{top:calc(var(--e)*64)}
 .kv.xr .kv__h{margin-top:calc(var(--e)*64)}
 .x-kv__script{right:calc(var(--e)*150);top:calc(var(--e)*70);--sf:96}
-.x-kv__arch{left:calc(var(--e)*600);top:calc(var(--e)*214);width:calc(var(--e)*580);height:calc(var(--e)*520)}
-.x-kv__glow{left:calc(var(--e)*610);top:calc(var(--e)*250);width:calc(var(--e)*560);height:calc(var(--e)*420)}
+.x-kv__arch{left:calc(var(--e)*600);top:calc(var(--e)*120);width:calc(var(--e)*580);height:calc(var(--e)*620)}
+.x-kv__glow{left:calc(var(--e)*610);top:calc(var(--e)*150);width:calc(var(--e)*560);height:calc(var(--e)*420)}
 .x-kv .x-cup{z-index:2}
-.x-kv .k1{left:calc(var(--e)*556);bottom:calc(var(--e)*76);width:calc(var(--e)*300);z-index:1}
-.x-kv .k3{left:calc(var(--e)*676);bottom:calc(var(--e)*34);width:calc(var(--e)*310);z-index:2}
-.x-kv .k4{left:calc(var(--e)*776);bottom:calc(var(--e)*-10);width:calc(var(--e)*370);z-index:3}
-.x-kv .k2{left:calc(var(--e)*990);bottom:calc(var(--e)*50);width:calc(var(--e)*268);z-index:2}
+.x-kv .k1{left:calc(var(--e)*556);bottom:calc(var(--e)*226);width:calc(var(--e)*300);z-index:1}
+.x-kv .k3{left:calc(var(--e)*676);bottom:calc(var(--e)*184);width:calc(var(--e)*310);z-index:2}
+.x-kv .k4{left:calc(var(--e)*776);bottom:calc(var(--e)*140);width:calc(var(--e)*370);z-index:3}
+.x-kv .k2{left:calc(var(--e)*990);bottom:calc(var(--e)*200);width:calc(var(--e)*268);z-index:2}
 .x-kv .k4 .sticker{width:22cqw;height:22cqw;font-size:3.7cqw;right:4%;left:auto;top:31%;transform:rotate(12deg)}
-.x-kv .floor{left:calc(var(--e)*560);right:calc(var(--e)*0);bottom:calc(var(--e)*0);height:46%}
-.x-kv__ticket.ticket{left:calc(var(--e)*330);bottom:calc(var(--e)*26);width:calc(var(--e)*270);transform:rotate(-5deg)}
+.x-kv .floor{left:calc(var(--e)*560);right:calc(var(--e)*0);bottom:calc(var(--e)*90);height:40%}
+.x-kv__ticket.ticket{left:calc(var(--e)*470);bottom:calc(var(--e)*64);width:calc(var(--e)*270);transform:rotate(-4deg);z-index:4}
 .x-kv .x-parol{left:calc(var(--e)*1070);--pw:96}
 .x-kv__pill{position:absolute;left:calc(var(--e)*60);bottom:calc(var(--e)*44);display:flex;gap:calc(var(--e)*10);font:700 calc(var(--e)*15)/1 var(--head);color:#cfe0d8}
 .x-kv__pill span{padding:calc(var(--e)*9) calc(var(--e)*14);border-radius:999px;box-shadow:inset 0 0 0 calc(var(--e)*1.5) rgba(242,221,176,.4)}
