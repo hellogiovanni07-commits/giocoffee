@@ -40,46 +40,63 @@ list();
 const h = location.hash.slice(1);
 pick(STORES.some(s => s.id === h) ? h : store.get('store', 'bgc'));
 
-/* ---------- the storefront turns: 48 Blender views, drag (with a little momentum), arrow keys ---------- */
+/* ---------- the storefront turns: 48 Blender views, drag (with a little momentum), arrow keys ----------
+   Views are decoded up front and drawn onto one canvas, at most once per frame, so turning never waits on a decode. */
 (() => {
   const spin = $('#spin'), img = $('#spinImg'); if (!spin) return;
   const N = 48, src = i => `assets/3d/hero/turn/f${String(i).padStart(2, '0')}.webp?v=1`;
-  const frames = [], loaded = new Set();
-  let pos = 0, shown = 0, drag = null, vel = 0, raf = 0, touched = false;
+  const cv = document.createElement('canvas'); cv.className = 'sth__cv'; cv.setAttribute('aria-hidden', 'true');
+  const ctx = cv.getContext('2d', { alpha: true });
+  const frames = new Array(N), ready = new Array(N).fill(false);
+  let pos = 0, drawn = -1, want = 0, drag = null, vel = 0, coastRaf = 0, drawRaf = 0, touched = false, live = false;
   const side = d => d < 30 || d > 330 ? 'Front of the store' : d < 150 ? 'Right side, the blade sign and side window' : d < 210 ? 'Back of the store, staff door and bench' : 'Left side, the street lamp and side window';
-  let want = 0;
-  const put = i => { if (want === i && shown !== i) { img.src = frames[i].src; shown = i; } };
-  const get = i => { if (!frames[i]) { const im = new Image(); im.decoding = 'async'; im.onload = () => { loaded.add(i); put(i); }; im.src = src(i); frames[i] = im; } };
+  const size = () => { const r = spin.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); cv.width = Math.round(r.width * d); cv.height = Math.round(r.width * d * img.naturalHeight / img.naturalWidth || r.height * d); drawn = -1; paint(); };
+  const nearestReady = i => { for (let k = 0; k < N / 2; k++) { if (ready[(i + k) % N]) return (i + k) % N; if (ready[(i - k + N) % N]) return (i - k + N) % N; } return -1; };
+  function paint() {
+    drawRaf = 0; if (!live) return;
+    const i = ready[want] ? want : nearestReady(want); if (i < 0 || i === drawn) return;
+    ctx.clearRect(0, 0, cv.width, cv.height); ctx.drawImage(frames[i], 0, 0, cv.width, cv.height); drawn = i;
+  }
   const show = () => {
-    const i = ((Math.round(pos) % N) + N) % N; want = i;
-    const deg = Math.round(i * 360 / N); spin.setAttribute('aria-valuenow', deg); spin.setAttribute('aria-valuetext', side(deg));
-    if (loaded.has(i)) put(i); else get(i);
+    want = ((Math.round(pos) % N) + N) % N;
+    const deg = Math.round(want * 360 / N);
+    if (spin.getAttribute('aria-valuenow') != deg) { spin.setAttribute('aria-valuenow', deg); spin.setAttribute('aria-valuetext', side(deg)); }
+    if (!drawRaf) drawRaf = requestAnimationFrame(paint);
   };
-  // fetch the views nearest the front first, both directions
-  const load = () => { for (let k = 1; k < N; k++) get(k % 2 ? (k + 1) / 2 : N - k / 2); };
-  frames[0] = { src: img.src }; loaded.add(0);
-  if (img.complete) setTimeout(load, 200); else img.addEventListener('load', () => setTimeout(load, 200), { once: true });
-  const coast = () => { raf = 0; if (Math.abs(vel) < .02 || reduce) return; pos += vel; vel *= .92; show(); raf = requestAnimationFrame(coast); };
+  // decode every view ahead of time (nearest the front first); swap the <img> for the canvas once the front is ready
+  const get = async i => {
+    const im = new Image(); im.decoding = 'async'; im.src = src(i);
+    try { await im.decode(); } catch (e) { return; }
+    frames[i] = 'createImageBitmap' in window ? await createImageBitmap(im).catch(() => im) : im; ready[i] = true;
+    if (i === 0 && !live) { live = true; spin.append(cv); size(); spin.classList.add('live'); }
+    if (i === want && drawn !== i && !drawRaf) drawRaf = requestAnimationFrame(paint);
+  };
+  const load = async () => { await get(0); const order = []; for (let k = 1; k < N; k++) order.push(k % 2 ? (k + 1) / 2 : N - k / 2); for (const i of order) await get(i); };
+  if (img.complete) setTimeout(load, 150); else img.addEventListener('load', () => setTimeout(load, 150), { once: true });
+  addEventListener('resize', () => { if (live) size(); }, { passive: true });
+
+  const coast = () => { coastRaf = 0; if (Math.abs(vel) < .03 || reduce) return; pos += vel; vel *= .9; show(); coastRaf = requestAnimationFrame(coast); };
   spin.addEventListener('pointerdown', e => {
-    touched = true; cancelAnimationFrame(raf); vel = 0; spin.setPointerCapture(e.pointerId);
-    drag = { x: e.clientX, p: pos, t: performance.now(), lx: e.clientX }; spin.classList.add('drag');
+    touched = true; cancelAnimationFrame(coastRaf); vel = 0; spin.setPointerCapture(e.pointerId);
+    drag = { x: e.clientX, p: pos, t: performance.now(), lx: e.clientX, per: spin.clientWidth / 30 }; spin.classList.add('drag');
   });
   spin.addEventListener('pointermove', e => {
-    if (!drag) return; const per = spin.clientWidth / 30;           // ~30 frames across the width: one drag turns it most of the way
-    pos = drag.p - (e.clientX - drag.x) / per;
-    const now = performance.now(); vel = -(e.clientX - drag.lx) / per / Math.max(1, (now - drag.t) / 16); drag.t = now; drag.lx = e.clientX;
+    if (!drag) return;
+    pos = drag.p - (e.clientX - drag.x) / drag.per;
+    const now = performance.now(), dt = Math.max(8, now - drag.t);
+    vel = vel * .5 + (-(e.clientX - drag.lx) / drag.per) * (16 / dt) * .5; drag.t = now; drag.lx = e.clientX;
     show();
-  });
-  const end = () => { if (!drag) return; drag = null; spin.classList.remove('drag'); if (!reduce) raf = requestAnimationFrame(coast); };
+  }, { passive: true });
+  const end = () => { if (!drag) return; drag = null; spin.classList.remove('drag'); if (!reduce) coastRaf = requestAnimationFrame(coast); };
   spin.addEventListener('pointerup', end); spin.addEventListener('pointercancel', end);
   spin.addEventListener('keydown', e => {
     const k = { ArrowLeft: 1, ArrowDown: 1, ArrowRight: -1, ArrowUp: -1 }[e.key];
     if (k) { e.preventDefault(); touched = true; pos = Math.round(pos) + k; show(); }
     else if (e.key === 'Home') { e.preventDefault(); pos = 0; show(); }
   });
-  // once the views are in, a small turn and back so it's clear the store moves
-  if (!reduce) setTimeout(function peek(t0) {
-    if (touched) return; if (loaded.size < N) return setTimeout(peek, 400);
+  // once every view is decoded, a small turn and back so it's clear the store moves
+  if (!reduce) setTimeout(function peek() {
+    if (touched) return; if (ready.some(r => !r)) return setTimeout(peek, 400);
     const start = performance.now();
     const step = now => { if (touched) return; const k = Math.min(1, (now - start) / 2400); pos = Math.sin(k * Math.PI) * 6; show(); if (k < 1) requestAnimationFrame(step); };
     requestAnimationFrame(step);

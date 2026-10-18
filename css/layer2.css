@@ -425,3 +425,14 @@ body:has(.mnav.open) .hdr .find,body:has(.mnav.open) .hdr .cart-btn{color:var(--
 .sth__spin:focus-visible{outline:2px solid var(--gold-l);outline-offset:6px;box-shadow:none}
 .sth__hint{position:absolute;left:50%;bottom:-6px;translate:-50% 0;display:inline-flex;align-items:center;gap:10px;font:700 22px/1 var(--hand);color:var(--gold-l);white-space:nowrap;pointer-events:none;opacity:.9}
 .sth__hint svg{width:42px;height:14px}
+
+/* turning without lag: no per-frame filters, the canvas sits exactly over the first view */
+.sth__shop{filter:none}
+.sth__spin .sth__shop{transition:opacity 200ms ease}
+.sth__spin.live .sth__shop{opacity:0}
+.sth__cv{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.sth__floorshadow{position:absolute;left:12%;right:6%;bottom:9%;height:22%;z-index:-1;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.45),transparent)}
+.sth__spin{transition:none;contain:layout paint}
+.sth__chip{-webkit-backdrop-filter:none;backdrop-filter:none;background:#fbf8f2}
+.sth__glow{filter:none;background:radial-gradient(closest-side,rgba(246,194,122,.3),rgba(246,194,122,.08) 60%,transparent)}
+.sth__spin.drag~.sth__chip,.sth__spin.drag~[data-depth]{transition:none}
