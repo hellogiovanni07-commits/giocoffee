@@ -266,21 +266,22 @@
   }
   function angles() {
     const el = $('#angles'); if (!el) return;
+    // what each kind of product shows off, in plain words, with one example picture
     const K = [
-      ['hot', 'Paper hot cup', 8, -20, 'Logo and sleeve to camera; open cups (latte art, whip) from 24°'],
-      ['iced', 'Clear iced cup', 7, -17, 'Layers, ice and straw readable; condensation catches the rim'],
-      ['frappe', 'Frappé', 7, -17, 'Dome lid and whip silhouette against the rim light'],
-      ['mug', 'Ceramic cup + saucer', 32, 29, 'High enough to see the latte art'],
-      ['croissant', 'Croissant', 32, 0, 'Shows the layers and the curve'],
-      ['ensaymada', 'Ensaymada', 34, 0, 'The coil and the queso from above'],
-      ['muffin', 'Muffin', 18, 0, 'Crunchy top and the paper case'],
-      ['cookie', 'Cookie', 36, 0, 'Chunks and salt on top'],
-      ['cake', 'Cake slice', 24, 52, 'Turned to show the three layers'],
-      ['beans', 'Bean bag', 11, -26, 'Label face-on enough to read origin and roast'],
-      ['tumbler', 'Steel tumbler', 8, -17, 'Badge to camera, lid slider visible'],
-      ['ceramic', 'Stoneware mug', 11, 34, 'Handle to the right, badge on the side']
+      ['hot', 'Hot cups', 'The logo and the sleeve, where the name goes'],
+      ['iced', 'Iced cups', 'The layers, the ice and the straw'],
+      ['frappe', 'Frappés', 'The dome of whip against a bright edge'],
+      ['mug', 'Cups with a saucer', 'Seen from a little higher, for the latte art'],
+      ['croissant', 'Croissant', 'The flaky layers and the curve'],
+      ['ensaymada', 'Ensaymada', 'The coil and the cheese, from above'],
+      ['muffin', 'Muffin', 'The crunchy top and the paper case'],
+      ['cookie', 'Cookie', 'The chunks and the salt on top'],
+      ['cake', 'Cake slices', 'Turned to show all three layers'],
+      ['beans', 'Bean bags', 'The label: origin and roast'],
+      ['tumbler', 'Tumblers', 'The badge, with the lid in view'],
+      ['ceramic', 'Mugs', 'Handle to the right, badge on the side']
     ];
-    el.innerHTML = `<thead><tr><th scope="col">Product type</th><th scope="col">Camera height</th><th scope="col">Turn</th><th scope="col">Why</th><th scope="col">Items</th></tr></thead><tbody>${K.map(([k, n, el2, t, why]) => { const its = ITEMS.filter(i => i.kind === k); return `<tr><td><b>${n}</b></td><td>${el2}°</td><td>${t > 0 ? '+' : t < 0 ? '−' : ''}${Math.abs(t)}°</td><td>${why}</td><td><small class="muted">${its.map(i => esc(i.name)).join(', ')}</small></td></tr>`; }).join('')}</tbody>`;
+    el.innerHTML = K.map(([k, n, what]) => { const its = ITEMS.filter(i => i.kind === k); if (!its.length) return ''; return `<div class="x-shot"><img src="${art(its[0].id, true)}" alt="" width="160" height="160" loading="lazy"><div><b>${n}</b><span>${what}. ${its.length > 1 ? `${its.length} products` : esc(its[0].name)}.</span></div></div>`; }).join('');
   }
   function gallery() {
     const el = $('#gallery'); if (!el) return;
