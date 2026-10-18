@@ -1,6 +1,6 @@
 /* GioCoffee · rewards page */
-import { boot, $, $$, esc, store, toast, tilt, IC, reduce, cart, refreshMember } from './common.js?v=14';
-import { REWARDS, LEVELS, art } from './data.js?v=14';
+import { boot, $, $$, esc, store, toast, tilt, IC, reduce, cart, refreshMember } from './common.js?v=15';
+import { REWARDS, LEVELS, art } from './data.js?v=15';
 
 boot('rewards.html');
 const S = { member: store.get('member', false), name: store.get('name', ''), stars: store.get('stars', 0), year: store.get('yearStars', 0) };

@@ -1,7 +1,7 @@
 /* GioCoffee · stores page */
-import { boot, $, $$, esc, MARK, store, toast, reduce } from './common.js?v=14';
-import { STORES } from './data.js?v=14';
-import { MAP_SVG, pinsHTML, openNow, hoursText } from './map.js?v=14';
+import { boot, $, $$, esc, MARK, store, toast, reduce } from './common.js?v=15';
+import { STORES } from './data.js?v=15';
+import { MAP_SVG, pinsHTML, openNow, hoursText } from './map.js?v=15';
 
 boot('stores.html');
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -62,7 +62,7 @@ pick(STORES.some(s => s.id === h) ? h : store.get('store', 'bgc'));
   });
   const start = async () => {
     try {
-      const { mountStorefront } = await import('./storefront3d.js?v=20');
+      const { mountStorefront } = await import('./storefront3d.js?v=15');
       view = await mountStorefront(spin, { reduce, src: 'assets/3d/hero/storefront.glb?v=3', onTurn: announce });
       spin.classList.add('live'); $('#spinZoom').hidden = false;
       // a small turn and back so it's clear the store moves (only if nobody has touched it yet)

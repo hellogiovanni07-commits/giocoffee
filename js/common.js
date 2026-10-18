@@ -3,14 +3,14 @@
    intro and "Gio", the barista chat. Every page imports this.
    Orders, sign-up and newsletter are demo only.
    ========================================================= */
-import { ITEMS, CATS, byId, art, peso, STORES, SIZES, MILKS, LEVELS, isDrink, milkChoice, defaultNote } from './data.js?v=14';
+import { ITEMS, CATS, byId, art, peso, STORES, SIZES, MILKS, LEVELS, isDrink, milkChoice, defaultNote } from './data.js?v=15';
 /* stars per ₱50 follow the member's level; orders earn per full ₱50 */
 export const lineStars = l => l.reward ? 0 : Math.floor(l.price / 50) * l.q * starRate();
 export const starsFor = price => Math.floor(price / 50) * starRate();
 export const starRate = () => { const y = store.get('yearStars', 0); return (LEVELS.slice().reverse().find(l => y >= l.from) || LEVELS[0]).rate; };
 let fee = 0;
-import { hoursFor, hoursText, openNow } from './map.js?v=14';
-import { si } from './icons.js?v=14';
+import { hoursFor, hoursText, openNow } from './map.js?v=15';
+import { si } from './icons.js?v=15';
 
 export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -317,7 +317,7 @@ export async function openItem(id, fromEl = null) {
   $('#mAdd').addEventListener('click', e => { cart.add(id, { price: price(), note: note(), name: drink ? name : '' }, img); closeModal(); });
   // live 3D replaces the still once loaded
   try {
-    const { GioStage } = await import('./gio3d.js?v=14');
+    const { GioStage } = await import('./gio3d.js?v=15');
     if (!modalStage) modalStage = new GioStage(cv, { fit: 1.3 });
     modalStage.resume(); await modalStage.show(it.v, { name, assemble: !reduce });
     img.style.opacity = 0;
@@ -378,7 +378,11 @@ function intro() {
   if (seen || reduce) { document.body.classList.remove('is-loading'); return Promise.resolve(); }
   try { sessionStorage.setItem('gio:intro', 1); } catch (e) { }
   const el = document.createElement('div'); el.className = 'intro'; el.setAttribute('aria-hidden', 'true');
-  el.innerHTML = `<div><div class="intro__cup"><svg viewBox="0 0 120 150">
+  // background: rows of hand-written names drifting (the names baristas write on cups), ripples, a crema glow, beans
+  const NAMES = ['Andrea', 'Paolo', 'Hana', 'Bea', 'Marco', 'Josh', 'Tin', 'Gio', 'Mika', 'Carlo', 'Lia', 'Rafa', 'Nina', 'Jun'];
+  const row = k => { const n = NAMES.slice(k * 3 % NAMES.length).concat(NAMES).slice(0, 9).join(' · '); return `<div class="intro__row" style="--k:${k}"><span>${n} · ${n} ·&nbsp;</span><span>${n} · ${n} ·&nbsp;</span></div>`; };
+  const bg = `<div class="intro__bg"><i class="intro__beans"></i><div class="intro__names">${[0, 1, 2, 3, 4, 5, 6].map(row).join('')}</div><i class="intro__glow"></i><i class="intro__ring"></i><i class="intro__ring"></i><i class="intro__ring"></i><i class="intro__vig"></i></div>`;
+  el.innerHTML = bg + `<div class="intro__mid"><div class="intro__cup"><svg viewBox="0 0 120 150">
       <g class="intro__steam" fill="none" stroke="#c9a15b" stroke-width="4" stroke-linecap="round"><path d="M45 34c-8-8 8-14 0-24"/><path d="M60 30c-8-8 8-14 0-24"/><path d="M75 34c-8-8 8-14 0-24"/></g>
       <defs><clipPath id="icup"><path d="M22 52h76l-8 86a8 8 0 0 1-8 7H38a8 8 0 0 1-8-7z"/></clipPath></defs>
       <path d="M22 52h76l-8 86a8 8 0 0 1-8 7H38a8 8 0 0 1-8-7z" fill="#fbf8f2"/>

@@ -1,6 +1,6 @@
 /* GioCoffee · menu page */
-import { boot, $, $$, esc, cart, store, reveal, openItem, IC, reduce } from './common.js?v=14';
-import { ITEMS, CATS, art, peso, milkChoice } from './data.js?v=14';
+import { boot, $, $$, esc, cart, store, reveal, openItem, IC, reduce } from './common.js?v=15';
+import { ITEMS, CATS, art, peso, milkChoice } from './data.js?v=15';
 
 boot('menu.html');
 /* mid-tone stages: calm enough that a white cup still reads against them */
