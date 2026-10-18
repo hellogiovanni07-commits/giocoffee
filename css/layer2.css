@@ -405,3 +405,17 @@ body:has(.mnav.open) .hdr .find,body:has(.mnav.open) .hdr .cart-btn{color:var(--
   .sth__hint .hz-d{display:none}.sth__hint .hz-m{display:inline}
 }
 .sth__hint{bottom:-22px}
+
+/* zooming never cuts the store: the canvas reaches past its box (the hero clips it), the copy column stays on top */
+.sth__spin{contain:none;overflow:visible}
+.sth__cv{inset:auto;max-width:none;max-height:none}
+.sth__copy{position:relative;z-index:1}
+.sth__art{z-index:0}
+
+/* zoomed in, the store fills the hero behind the copy: a soft green wash keeps the text readable */
+.sth__copy::before{content:"";position:absolute;inset:-32px -72px -32px -100vw;z-index:-1;pointer-events:none;background:rgba(20,51,43,.9);
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 140px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 140px),transparent);
+  opacity:0;transition:opacity 300ms ease}
+.st-hero:has(.sth__spin.zoomed) .sth__copy::before{opacity:1}
+@media (max-width:980px){.sth__copy::before{inset:-40px -16px -48px;-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 60px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 60px),transparent)}}
+.sth__hint{transition:opacity 200ms ease}.sth__spin.zoomed~.sth__hint{opacity:0}

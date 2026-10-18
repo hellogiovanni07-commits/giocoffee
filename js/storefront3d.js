@@ -37,9 +37,18 @@ export async function mountStorefront(host, { reduce = false, src, onTurn } = {}
   camera.position.set(Math.sin(CAM.az) * Math.cos(CAM.el) * CAM.d, CAM.y + Math.sin(CAM.el) * CAM.d, Math.cos(CAM.az) * Math.cos(CAM.el) * CAM.d);
   camera.lookAt(T); camera.setViewOffset(CROP.full, CROP.full, CROP.x, CROP.y, CROP.w, CROP.h); camera.updateProjectionMatrix();
   let W = 0, H = 0;
+  // the canvas bleeds past the box (CSS) so a zoomed-in store is never cut at the box edge; the view offset widens
+  // with it, so at normal zoom the store sits exactly where the poster is
+  const back = host.closest('.page-hero') || host.parentElement;
   const fit = () => {
-    const r = host.getBoundingClientRect(); W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
-    renderer.setSize(W, H, false); draw();
+    // the canvas is laid across the whole hero, behind everything in it (the hero clips it)
+    const r = host.getBoundingClientRect(), hr = back.getBoundingClientRect();
+    Object.assign(cv.style, { left: (hr.left - r.left) + 'px', top: (hr.top - r.top) + 'px', width: hr.width + 'px', height: hr.height + 'px' });
+    const c = cv.getBoundingClientRect();
+    W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+    const k = CROP.w / W, cw = Math.max(1, Math.round(c.width)), ch = Math.max(1, Math.round(c.height));
+    camera.setViewOffset(CROP.full, CROP.full, CROP.x + (c.left - r.left) * k, CROP.y + (c.top - r.top) * k, cw * k, ch * k);
+    camera.updateProjectionMatrix(); renderer.setSize(cw, ch, false); draw();
   };
 
   // render only when something changes (drag, coast, zoom, keys, resize)
@@ -81,7 +90,7 @@ export async function mountStorefront(host, { reduce = false, src, onTurn } = {}
   host.addEventListener('wheel', e => { if (!wheelOn && !e.ctrlKey) return; e.preventDefault(); zoomTo(zAim * Math.exp(-e.deltaY * .0015)); }, { passive: false });
   host.addEventListener('dblclick', () => zoomTo(zAim > 1.4 ? 1 : 2));
 
-  new ResizeObserver(fit).observe(host);
+  const ro = new ResizeObserver(fit); ro.observe(host); ro.observe(back);
   new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) kick(); }).observe(host);
   host.append(cv); fit();
   return {

@@ -62,7 +62,7 @@ pick(STORES.some(s => s.id === h) ? h : store.get('store', 'bgc'));
   });
   const start = async () => {
     try {
-      const { mountStorefront } = await import('./storefront3d.js?v=18');
+      const { mountStorefront } = await import('./storefront3d.js?v=20');
       view = await mountStorefront(spin, { reduce, src: 'assets/3d/hero/storefront.glb?v=2', onTurn: announce });
       spin.classList.add('live'); $('#spinZoom').hidden = false;
       // a small turn and back so it's clear the store moves (only if nobody has touched it yet)
