@@ -1,8 +1,8 @@
 /* GioCoffee · home page */
-import { boot, $, $$, esc, reduce, cart, store, toast, tilt, IC, MARK, reveal, openItem, pickupStore, starsFor } from './common.js?v=11';
-import { byId, art, peso, SIZES, MILKS, SYRUPS, STORES, REWARDS } from './data.js?v=11';
-import { MAP_SVG, pinsHTML, openNow } from './map.js?v=11';
-import { animate, scroll, inView } from '../vendor/motion/motion.esm.js?v=11';
+import { boot, $, $$, esc, reduce, cart, store, toast, tilt, IC, MARK, openItem, pickupStore, starsFor } from './common.js?v=12';
+import { byId, art, peso, SIZES, MILKS, SYRUPS, STORES, REWARDS } from './data.js?v=12';
+import { MAP_SVG, pinsHTML, openNow } from './map.js?v=12';
+import { animate, scroll, inView } from '../vendor/motion/motion.esm.js?v=12';
 
 const introDone = boot('index.html');
 $('#revL').innerHTML = IC.arrowL; $('#revR').innerHTML = IC.arrowR;
@@ -222,7 +222,7 @@ syncBuilder(false);
 /* ---------- 3D after the intro so it never fights first paint ---------- */
 introDone.then(async () => {
   try {
-    const { GioStage } = await import('./gio3d.js?v=11');
+    const { GioStage } = await import('./gio3d.js?v=12');
     heroStage = new GioStage($('#heroCanvas'), { fit: 1.24 });
     await heroStage.show(byId(heroCur.id).v, { name: heroName, assemble: !reduce });
     inView('#buildCanvas', async () => {

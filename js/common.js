@@ -3,14 +3,14 @@
    intro and "Gio", the barista chat. Every page imports this.
    Orders, sign-up and newsletter are demo only.
    ========================================================= */
-import { ITEMS, CATS, byId, art, peso, STORES, SIZES, MILKS, LEVELS, isDrink, milkChoice, defaultNote } from './data.js?v=11';
+import { ITEMS, CATS, byId, art, peso, STORES, SIZES, MILKS, LEVELS, isDrink, milkChoice, defaultNote } from './data.js?v=12';
 /* stars per ₱50 follow the member's level; orders earn per full ₱50 */
 export const lineStars = l => l.reward ? 0 : Math.floor(l.price / 50) * l.q * starRate();
 export const starsFor = price => Math.floor(price / 50) * starRate();
 export const starRate = () => { const y = store.get('yearStars', 0); return (LEVELS.slice().reverse().find(l => y >= l.from) || LEVELS[0]).rate; };
 let fee = 0;
-import { hoursFor, hoursText, openNow } from './map.js?v=11';
-import { si } from './icons.js?v=11';
+import { hoursFor, hoursText, openNow } from './map.js?v=12';
+import { si } from './icons.js?v=12';
 
 export const $ = (s, el = document) => el.querySelector(s);
 export const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -28,13 +28,6 @@ export const IC = {
   arrowL: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>',
   arrowR: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>',
   cup: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1.4 12H7.4z"/><path d="M5 5.5h14V8H5z"/><path d="M7.6 12h8.8"/></svg>',
-  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
-};
-const SOC = {
-  ig: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
-  fb: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v7h4v-7h3l1-4h-4V8z"/></svg>',
-  tt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.3 1.8 4 4 4.2v3.4a7.6 7.6 0 0 1-4-1.2v6.1A5.5 5.5 0 1 1 10.5 10v3.5a2 2 0 1 0 2 2V3z"/></svg>',
-  yt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.6 12 5.6 12 5.6s-6 0-7.9.5A3 3 0 0 0 2 8.2 31 31 0 0 0 1.6 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2.1 2.1c1.9.5 7.9.5 7.9.5s6 0 7.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .4-3.8 31 31 0 0 0-.4-3.8zM10 15V9l5.2 3z"/></svg>'
 };
 
 /* ---------- storage (try/catch: private windows) ---------- */
@@ -263,7 +256,6 @@ function drawer() {
     $('#doneBtn').focus();
   });
   cart.render();
-  window.gioCart = open;
 }
 
 /* ---------- item modal (used by menu + home) ---------- */
@@ -327,7 +319,7 @@ export async function openItem(id, fromEl = null) {
   $('#mAdd').addEventListener('click', e => { cart.add(id, { price: price(), note: note(), name: drink ? name : '' }, img); closeModal(); });
   // live 3D replaces the still once loaded
   try {
-    const { GioStage } = await import('./gio3d.js?v=11');
+    const { GioStage } = await import('./gio3d.js?v=12');
     if (!modalStage) modalStage = new GioStage(cv, { fit: 1.3 });
     modalStage.resume(); await modalStage.show(it.v, { name, assemble: !reduce });
     img.style.opacity = 0;
@@ -340,17 +332,6 @@ export function reveal(root = document) {
   if (reduce || !('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('in')); return; }
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: .08 });
   els.forEach(e => io.observe(e));
-}
-export function counters(root = document) {
-  $$('[data-count]', root).forEach(el => {
-    const io = new IntersectionObserver(es => {
-      if (!es[0].isIntersecting) return; io.disconnect();
-      const to = +el.dataset.count, t0 = performance.now(), d = 1400;
-      const step = t => { const k = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(to * e).toLocaleString('en-PH') + (el.dataset.suf || ''); if (k < 1) requestAnimationFrame(step); };
-      requestAnimationFrame(step);
-    });
-    io.observe(el);
-  });
 }
 function btnGlow() {
   document.addEventListener('pointermove', e => {
@@ -427,7 +408,6 @@ function scoreItems(q) {
     return { it, s, all };
   }).filter(x => x.s > .5).sort((a, b) => b.s - a.s);
 }
-const findItems = q => scoreItems(q).map(x => x.it);
 const NUM = { a: 1, an: 1, one: 1, isang: 1, two: 2, dalawang: 2, three: 3, tatlong: 3 };
 /* "add 2 cold brews" → { q: 2, it }. Only when every word names the same drink; otherwise no add. */
 function parseAdd(t) {
@@ -509,6 +489,6 @@ export async function boot(page) {
   // the first screen never waits on a scroll observer
   const top = $('.hero, .page-hero, .rw-hero, main > section:first-child');
   done.then(() => requestAnimationFrame(() => top && $$('.rv, .split-line', top).forEach(e => e.classList.add('in'))));
-  reveal(); counters();
+  reveal();
   return done;
 }

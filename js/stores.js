@@ -1,7 +1,7 @@
 /* GioCoffee · stores page */
-import { boot, $, $$, esc, MARK, store, toast, reduce } from './common.js?v=11';
-import { STORES } from './data.js?v=11';
-import { MAP_SVG, pinsHTML, openNow, hoursFor, hoursText } from './map.js?v=11';
+import { boot, $, $$, esc, MARK, store, toast, reduce } from './common.js?v=12';
+import { STORES } from './data.js?v=12';
+import { MAP_SVG, pinsHTML, openNow, hoursText } from './map.js?v=12';
 
 boot('stores.html');
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

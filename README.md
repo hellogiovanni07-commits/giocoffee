@@ -75,7 +75,7 @@ A Starbucks-style coffee chain concept for Bonifacio Global City and Makati, Met
 2. `python blender/finish.py [id ...]` trims and squares them into `assets/3d/`.
 3. Bump `ART_VERSION` in `js/data.js`.
 - `--hero` renders the product with no floor into `blender/out_hero/` (the menu hero cups in `assets/3d/hero/`).
-- `blender -b -P blender/storefront.py -- --turn 48 --samples 96 --res 1500` renders the storefront turntable (48 views), then `python blender/finish_turn.py` crops them alike into `assets/3d/hero/turn/`. Without `--turn` it renders one still.
+- `blender -b -P blender/storefront.py -- --turn 48 --samples 96 --res 1500` renders the storefront turntable (96 views; render 48 first, then `--turn 96 --odd` fills in the views between), then `python blender/finish_turn.py` crops them alike into `assets/3d/hero/turn/` (phones load every other view). Without `--turn` it renders one still.
 - Clear cups are thin PET (transparent + glossy by Fresnel) in a light mint studio, filled to 95%.
 
 `tools/render.html` is also a 3D viewer: open http://localhost:5240/tools/render.html to browse every model.

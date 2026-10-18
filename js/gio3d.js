@@ -808,7 +808,6 @@ export class GioStage {
     const sw = Math.max(5.6, Math.hypot(size.x, size.z) * 2.6); this.shadow.scale.set(sw, sw, 1); this.shadow.position.y = .002;
     const ud = this.model.userData; this.steamOn = this.o.steam && ud.steam && !this.reduce; this.steamY = (ud.steamY || 3) * (this.opts?.scale || 1);
   }
-  setTarget(rot) { this.rotY = rot; }
   spin(n = 1) { if (!this.reduce) this.vel = .25 * n; }
   pause() { this.paused = true; cancelAnimationFrame(this.raf); this.raf = 0; }
   resume() { this.paused = false; this.loop(); }

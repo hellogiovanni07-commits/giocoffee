@@ -1,7 +1,7 @@
 """GioCoffee - finish the storefront turntable (blender/out_hero/turn/f00..fNN.png) for the stores hero.
 
 Every frame gets the same crop (the union of what is visible across all frames) so the store never jumps while it
-turns, then is saved as assets/3d/hero/turn/fNN.webp. Frame 0 is also saved as assets/3d/hero/storefront.webp.
+turns, then is saved as assets/3d/hero/turn/fNN.webp.
 
   python blender/finish_turn.py [width]
 """
@@ -23,5 +23,4 @@ for f in files:
     im = Image.open(f).convert('RGBA').crop(box).resize((W, H), Image.LANCZOS)
     n = os.path.splitext(os.path.basename(f))[0]
     im.save(os.path.join(DST, n + '.webp'), 'WEBP', quality=80, alpha_quality=90, method=6)
-    if n == 'f00': im.save(os.path.join(ROOT, 'assets', '3d', 'hero', 'storefront.webp'), 'WEBP', quality=86, alpha_quality=95, method=6)
 print(len(files), 'frames', (W, H))

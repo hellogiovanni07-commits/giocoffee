@@ -179,11 +179,5 @@ const NO_MILK = ['americano', 'iced-americano', 'cold-brew', 'nitro-cold-brew', 
 export const milkChoice = it => isDrink(it) && !NO_MILK.includes(it.id) && it.v.kind !== 'frappe';
 export const defaultNote = it => !isDrink(it) ? (it.cat === 'food' ? 'Warmed on request' : 'Boxed to take home') : `Medio${milkChoice(it) ? ' · ' + (it.milk || 'whole') + ' milk' : ''}`;
 
-/* combos: a drink and a bake (or a few), priced below the sum of the parts */
-export const COMBOS = [
-  { id: 'solo', name: 'Solo Merienda', note: 'the 3 pm fix', bg: ['#b8742f', '#7d4719'], items: [['iced-spanish-latte', 1], ['ensaymada', 1]], price: 295 },
-  { id: 'date', name: 'Kape Date', note: 'one for you, one for them', bg: ['#1d4337', '#0b1f19'], items: [['maple-oat-latte', 2], ['butter-croissant', 1]], price: 499 },
-  { id: 'barkada', name: 'Barkada Box', note: 'for the whole table', bg: ['#0e6b4e', '#08402f'], items: [['java-chip-frappe', 1], ['cold-brew', 2], ['choc-chunk-cookie', 2]], price: 690 }
-];
 
 export const peso = n => '₱' + Math.round(n).toLocaleString('en-PH');

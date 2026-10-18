@@ -1,6 +1,6 @@
 /* GioCoffee · menu page */
-import { boot, $, $$, esc, cart, store, reveal, openItem, IC, reduce } from './common.js?v=11';
-import { ITEMS, CATS, COMBOS, byId, art, peso, milkChoice } from './data.js?v=11';
+import { boot, $, $$, esc, cart, store, reveal, openItem, IC, reduce } from './common.js?v=12';
+import { ITEMS, CATS, art, peso, milkChoice } from './data.js?v=12';
 
 boot('menu.html');
 /* mid-tone stages: calm enough that a white cup still reads against them */
@@ -71,23 +71,8 @@ $('#groups').addEventListener('click', e => {
   const c = e.target.closest('[data-item]'); if (c) openItem(c.dataset.item, c.querySelector('img'));
 });
 $('#askGio').addEventListener('click', () => $('.chat-fab').click());
-// combos: products grouped on the green grid, a hand-written note, the parts, the price
-const sum = c => c.items.reduce((a, [id, q]) => a + byId(id).price * q, 0);
-if ($('#combos')) $('#combos').innerHTML = COMBOS.map((c, i) => `<article class="combo rv" data-tilt="5" style="--c1:${c.bg[0]};--c2:${c.bg[1]};--d:${i * .08}s"><span class="sheen" aria-hidden="true"></span>
-  <span class="combo__note" aria-hidden="true">${esc(c.note)}</span>
-  <div class="combo__art lift">${c.items.flatMap(([id, q]) => Array.from({ length: Math.min(q, 2) }, () => id)).slice(0, 4).map((id, k, all) => `<img src="${art(id)}" alt="" width="200" height="200" style="--k:${k};--n:${all.length}" loading="lazy">`).join('')}</div>
-  <h2 class="combo__h">${esc(c.name)}</h2>
-  <ul>${c.items.map(([id, q]) => `<li>${q} ${esc(byId(id).name)}${q > 1 && !/s$/.test(byId(id).name) ? 's' : ''}</li>`).join('')}</ul>
-  <div class="combo__f"><span><b>${peso(c.price)}</b><s>${peso(sum(c))}</s></span><button class="btn btn-white" type="button" data-combo="${c.id}">Add combo</button></div></article>`).join('');
-$('#combos')?.addEventListener('click', e => {
-  const b = e.target.closest('[data-combo]'); if (!b) return; const c = COMBOS.find(x => x.id === b.dataset.combo);
-  cart.add(c.items[0][0], { price: c.price, title: `Combo: ${c.name}`, note: c.items.map(([id, q]) => `${q} ${byId(id).name}`).join(' + '), name: store.get('name', '') }, b.closest('.combo'));
-});
-// hero: category tiles and the three cups on the stand
+// hero: the four -ber months cups on the stand open in 3D
 $('.mh').addEventListener('click', e => { const b = e.target.closest('[data-item]'); if (b) openItem(b.dataset.item, b.querySelector('img')); });
-// the hero search drives the menu search
-$('#mhQ')?.addEventListener('input', e => { $('#q').value = e.target.value; clearTimeout(qt); qt = setTimeout(render, 200); });
-$('#mhQ')?.addEventListener('keydown', e => { if (e.key === 'Enter') $('#groups').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); });
 render();
 if (location.hash) setTimeout(() => $(location.hash)?.scrollIntoView(), 250);
 reveal();
