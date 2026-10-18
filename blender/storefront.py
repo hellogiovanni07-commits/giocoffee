@@ -17,6 +17,7 @@ exec(open(G['__file__'], encoding='utf8').read(), G)
 reset, rig, mat, rbox, srgb, link, GLASS, image, bump, tube = (G[k] for k in ('reset', 'rig', 'mat', 'rbox', 'srgb', 'link', 'GLASS', 'image', 'bump', 'tube'))
 SAMPLES, RES, ROOT = G['SAMPLES'], int(G['arg']('--res', 1600)), G['ROOT']
 TURN = int(G['arg']('--turn', 0))   # >0: render a turntable of this many frames into blender/out_hero/turn/
+ONLY_ODD = '--odd' in user        # with --turn: render only the odd frames (to fill in between an existing half-count set)
 
 HOUSE, GREEN, GOLD, CREAM = '#14332b', '#0e6b4e', '#c9a15b', '#f1e8d8'
 
@@ -299,6 +300,7 @@ def build():
         os.makedirs(os.path.dirname(path), exist_ok=True); sc.render.filepath = path; bpy.ops.render.render(write_still=True)
     if TURN:
         for i in range(TURN):
+            if ONLY_ODD and i % 2 == 0: continue
             shoot(-.55 + i * math.tau / TURN, os.path.join(ROOT, 'blender', 'out_hero', 'turn', f'f{i:02d}.png')); print('RENDERED frame', i, flush=True)
     else:
         shoot(-.55, os.path.join(ROOT, 'blender', 'out_hero', 'storefront.png')); print('RENDERED storefront', flush=True)

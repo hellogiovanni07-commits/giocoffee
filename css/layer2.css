@@ -436,3 +436,7 @@ body:has(.mnav.open) .hdr .find,body:has(.mnav.open) .hdr .cart-btn{color:var(--
 .sth__chip{-webkit-backdrop-filter:none;backdrop-filter:none;background:#fbf8f2}
 .sth__glow{filter:none;background:radial-gradient(closest-side,rgba(246,194,122,.3),rgba(246,194,122,.08) 60%,transparent)}
 .sth__spin.drag~.sth__chip,.sth__spin.drag~[data-depth]{transition:none}
+
+/* home hero: the still cup is only a fallback for when the 3D can't run (no stale cup behind the live one) */
+.js .hero__poster{opacity:0;visibility:hidden}
+.js .hero__poster.fallback{opacity:1;visibility:visible}

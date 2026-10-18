@@ -29,6 +29,7 @@ function ticket(p, animateMarks = true) {
   if (!animateMarks || reduce) $$('#ticketBoxes em').forEach(e => e.classList.add('in'));
   else requestAnimationFrame(() => $$('#ticketBoxes em').forEach(e => e.classList.add('in')));
 }
+$('#heroPoster').setAttribute('aria-hidden', 'true');
 function heroShow(p, first = false) {
   heroCur = p; const it = byId(p.id), hero = $('#hero');
   hero.style.setProperty('--hero-bg', p.bg); $('meta[name=theme-color]').content = p.bg;
@@ -224,13 +225,12 @@ introDone.then(async () => {
     const { GioStage } = await import('./gio3d.js?v=11');
     heroStage = new GioStage($('#heroCanvas'), { fit: 1.24 });
     await heroStage.show(byId(heroCur.id).v, { name: heroName, assemble: !reduce });
-    $('#heroPoster').classList.add('gone'); $('#heroPoster').setAttribute('aria-hidden', 'true');
     inView('#buildCanvas', async () => {
       if (bStage) return;
       bStage = new GioStage($('#buildCanvas'), { fit: 1.8 });
       await bStage.show(spec(), { name: B.name, scale: pick(SIZES, B.size).scale, assemble: !reduce });
     }, { margin: '200px' });
-  } catch (err) { console.warn('3D unavailable', err); }
+  } catch (err) { console.warn('3D unavailable', err); $('#heroPoster').classList.add('fallback'); $('#heroPoster').removeAttribute('aria-hidden'); }
 });
 // the hero stage sinks and the cup tilts away as you leave the hero
 if (!reduce && innerWidth >= 700) {

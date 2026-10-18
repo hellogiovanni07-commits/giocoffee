@@ -40,65 +40,93 @@ list();
 const h = location.hash.slice(1);
 pick(STORES.some(s => s.id === h) ? h : store.get('store', 'bgc'));
 
-/* ---------- the storefront turns: 48 Blender views, drag (with a little momentum), arrow keys ----------
-   Views are decoded up front and drawn onto one canvas, at most once per frame, so turning never waits on a decode. */
+/* ---------- the storefront turns ----------
+   96 Blender views, 3.75° apart (phones and data-saver load every other one). They download six at a time, nearest
+   the front first, are decoded once at the canvas's own size, and every frame blends the two views either side of
+   the exact drag position, so the store follows the pointer continuously instead of stepping. */
 (() => {
   const spin = $('#spin'), img = $('#spinImg'); if (!spin) return;
-  const N = 48, src = i => `assets/3d/hero/turn/f${String(i).padStart(2, '0')}.webp?v=1`;
+  const ALL = 96, lite = matchMedia('(max-width: 700px)').matches || navigator.connection?.saveData;
+  const STEP = lite ? 2 : 1, N = ALL / STEP;                      // views in use; positions are in view units
+  const src = k => `assets/3d/hero/turn/f${String(k * STEP).padStart(2, '0')}.webp?v=2`;
   const cv = document.createElement('canvas'); cv.className = 'sth__cv'; cv.setAttribute('aria-hidden', 'true');
-  const ctx = cv.getContext('2d', { alpha: true });
-  const frames = new Array(N), ready = new Array(N).fill(false);
-  let pos = 0, drawn = -1, want = 0, drag = null, vel = 0, coastRaf = 0, drawRaf = 0, touched = false, live = false;
+  const ctx = cv.getContext('2d');
+  const views = new Array(N), ready = new Array(N).fill(false);
+  let pos = 0, drag = null, vel = 0, raf = 0, touched = false, live = false, lastKey = '', W = 0, H = 0;
+  const wrap = i => ((i % N) + N) % N;
   const side = d => d < 30 || d > 330 ? 'Front of the store' : d < 150 ? 'Right side, the blade sign and side window' : d < 210 ? 'Back of the store, staff door and bench' : 'Left side, the street lamp and side window';
-  const size = () => { const r = spin.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); cv.width = Math.round(r.width * d); cv.height = Math.round(r.width * d * img.naturalHeight / img.naturalWidth || r.height * d); drawn = -1; paint(); };
-  const nearestReady = i => { for (let k = 0; k < N / 2; k++) { if (ready[(i + k) % N]) return (i + k) % N; if (ready[(i - k + N) % N]) return (i - k + N) % N; } return -1; };
-  function paint() {
-    drawRaf = 0; if (!live) return;
-    const i = ready[want] ? want : nearestReady(want); if (i < 0 || i === drawn) return;
-    ctx.clearRect(0, 0, cv.width, cv.height); ctx.drawImage(frames[i], 0, 0, cv.width, cv.height); drawn = i;
-  }
-  const show = () => {
-    want = ((Math.round(pos) % N) + N) % N;
-    const deg = Math.round(want * 360 / N);
-    if (spin.getAttribute('aria-valuenow') != deg) { spin.setAttribute('aria-valuenow', deg); spin.setAttribute('aria-valuetext', side(deg)); }
-    if (!drawRaf) drawRaf = requestAnimationFrame(paint);
+  const size = () => {
+    const r = spin.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
+    W = Math.min(img.naturalWidth || 960, Math.round(r.width * d)); H = Math.round(W * (img.naturalHeight || 671) / (img.naturalWidth || 960));
+    cv.width = W; cv.height = H; lastKey = ''; frame();
   };
-  // decode every view ahead of time (nearest the front first); swap the <img> for the canvas once the front is ready
-  const get = async i => {
+  const near = i => { for (let k = 0; k <= N / 2; k++) { if (ready[wrap(i + k)]) return wrap(i + k); if (ready[wrap(i - k)]) return wrap(i - k); } return -1; };
+  // draw the two views either side of pos, blended by how far between them we are
+  function frame() {
+    raf = 0; if (!live) return;
+    const a = Math.floor(pos), t = pos - a, i = wrap(a), j = wrap(a + 1);
+    const A = ready[i] ? i : near(i), B = ready[j] ? j : -1;
+    const key = A + ':' + (B >= 0 && t > .02 ? B + ':' + t.toFixed(2) : '');
+    if (A < 0 || key === lastKey) return; lastKey = key;
+    ctx.clearRect(0, 0, W, H); ctx.globalAlpha = 1; ctx.drawImage(views[A], 0, 0, W, H);
+    if (B >= 0 && t > .02 && A === i) { ctx.globalAlpha = t; ctx.drawImage(views[B], 0, 0, W, H); ctx.globalAlpha = 1; }
+  }
+  const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  const announce = () => {
+    const deg = Math.round(wrap(Math.round(pos)) * 360 / N) % 360;
+    if (+spin.getAttribute('aria-valuenow') !== deg) { spin.setAttribute('aria-valuenow', deg); spin.setAttribute('aria-valuetext', side(deg)); }
+  };
+  const set = p => { pos = p; kick(); };
+  // load: six at a time, nearest the front first (both ways), each decoded once at canvas size
+  const order = [0]; for (let k = 1; k < N; k++) order.push(k % 2 ? (k + 1) / 2 : N - k / 2);
+  const getOne = async i => {
     const im = new Image(); im.decoding = 'async'; im.src = src(i);
     try { await im.decode(); } catch (e) { return; }
-    frames[i] = 'createImageBitmap' in window ? await createImageBitmap(im).catch(() => im) : im; ready[i] = true;
-    if (i === 0 && !live) { live = true; spin.append(cv); size(); spin.classList.add('live'); }
-    if (i === want && drawn !== i && !drawRaf) drawRaf = requestAnimationFrame(paint);
+    if (!W) size();
+    views[i] = 'createImageBitmap' in window ? await createImageBitmap(im, { resizeWidth: W, resizeHeight: H, resizeQuality: 'high' }).catch(() => im) : im;
+    ready[i] = true;
+    if (i === 0 && !live) { live = true; spin.append(cv); spin.classList.add('live'); }
+    lastKey = ''; kick();
   };
-  const load = async () => { await get(0); const order = []; for (let k = 1; k < N; k++) order.push(k % 2 ? (k + 1) / 2 : N - k / 2); for (const i of order) await get(i); };
-  if (img.complete) setTimeout(load, 150); else img.addEventListener('load', () => setTimeout(load, 150), { once: true });
-  addEventListener('resize', () => { if (live) size(); }, { passive: true });
+  const load = async () => { await getOne(0); let n = 1; const worker = async () => { while (n < order.length) await getOne(order[n++]); }; await Promise.all(Array.from({ length: 6 }, worker)); };
+  const start = () => { size(); load(); };
+  if (img.complete && img.naturalWidth) start(); else img.addEventListener('load', start, { once: true });
+  // on resize the canvas follows; the decoded views are simply scaled when drawn
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (live) size(); }, 200); }, { passive: true });
 
-  const coast = () => { coastRaf = 0; if (Math.abs(vel) < .03 || reduce) return; pos += vel; vel *= .9; show(); coastRaf = requestAnimationFrame(coast); };
+  // drag: one full width turns it about 300°; on release it coasts and settles exactly on a view
+  const settle = () => {
+    const tick = () => {
+      if (drag) return;
+      if (!reduce && Math.abs(vel) > .02) { vel *= .9; set(pos + vel); }
+      else { const target = Math.round(pos), d = target - pos; if (Math.abs(d) < .01) { set(target); announce(); return; } set(pos + d * (reduce ? 1 : .25)); }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
   spin.addEventListener('pointerdown', e => {
-    touched = true; cancelAnimationFrame(coastRaf); vel = 0; spin.setPointerCapture(e.pointerId);
-    drag = { x: e.clientX, p: pos, t: performance.now(), lx: e.clientX, per: spin.clientWidth / 30 }; spin.classList.add('drag');
+    touched = true; vel = 0; spin.setPointerCapture(e.pointerId);
+    drag = { x: e.clientX, p: pos, lx: e.clientX, t: performance.now(), per: spin.clientWidth / (N * 300 / 360) };
+    spin.classList.add('drag');
   });
   spin.addEventListener('pointermove', e => {
     if (!drag) return;
-    pos = drag.p - (e.clientX - drag.x) / drag.per;
-    const now = performance.now(), dt = Math.max(8, now - drag.t);
-    vel = vel * .5 + (-(e.clientX - drag.lx) / drag.per) * (16 / dt) * .5; drag.t = now; drag.lx = e.clientX;
-    show();
+    const now = performance.now(), dt = Math.max(8, now - drag.t), dp = -(e.clientX - drag.lx) / drag.per;
+    vel = vel * .6 + dp * (16 / dt) * .4; drag.t = now; drag.lx = e.clientX;
+    set(drag.p - (e.clientX - drag.x) / drag.per); announce();
   }, { passive: true });
-  const end = () => { if (!drag) return; drag = null; spin.classList.remove('drag'); if (!reduce) coastRaf = requestAnimationFrame(coast); };
+  const end = () => { if (!drag) return; drag = null; spin.classList.remove('drag'); settle(); };
   spin.addEventListener('pointerup', end); spin.addEventListener('pointercancel', end);
   spin.addEventListener('keydown', e => {
     const k = { ArrowLeft: 1, ArrowDown: 1, ArrowRight: -1, ArrowUp: -1 }[e.key];
-    if (k) { e.preventDefault(); touched = true; pos = Math.round(pos) + k; show(); }
-    else if (e.key === 'Home') { e.preventDefault(); pos = 0; show(); }
+    if (k) { e.preventDefault(); touched = true; set(Math.round(pos) + k * Math.max(1, N / 48)); announce(); }
+    else if (e.key === 'Home') { e.preventDefault(); set(0); announce(); }
   });
-  // once every view is decoded, a small turn and back so it's clear the store moves
+  // once the views near the front are in, a small turn and back so it's clear the store moves
   if (!reduce) setTimeout(function peek() {
-    if (touched) return; if (ready.some(r => !r)) return setTimeout(peek, 400);
-    const start = performance.now();
-    const step = now => { if (touched) return; const k = Math.min(1, (now - start) / 2400); pos = Math.sin(k * Math.PI) * 6; show(); if (k < 1) requestAnimationFrame(step); };
+    if (touched) return; if (order.slice(0, 16).some(i => !ready[i])) return setTimeout(peek, 300);
+    const t0 = performance.now(), amp = N / 8;
+    const step = now => { if (touched) return; const k = Math.min(1, (now - t0) / 2600); set(Math.sin(k * Math.PI) * amp); if (k < 1) requestAnimationFrame(step); else set(0); };
     requestAnimationFrame(step);
-  }, 1200);
+  }, 900);
 })();
