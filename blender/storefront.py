@@ -287,6 +287,7 @@ def build():
     for nm, a0, a1, b0, b1 in (('rfT', .66, 1.74, 2.35, 2.41), ('rfB', .66, 1.74, .89, .95), ('rfL', .64, .7, .89, 2.41), ('rfR', 1.7, 1.76, .89, 2.41)):
         box(nm, 2.3, 2.38, a0, a1, b0, b1, house, .005)
     box('sideMullR', 2.36, 2.4, 1.17, 1.23, .95, 2.35, house, .005)
+    if '--bake' in user: return    # blender/storefront_bake.py takes it from here (live 3D model for the web)
     # camera: three-quarter view from the street corner, a little above eye level
     cam = bpy.data.cameras.new('cam'); cam.lens = 50
     co = link(bpy.data.objects.new('cam', cam)); bpy.context.scene.camera = co
@@ -305,4 +306,5 @@ def build():
     else:
         shoot(-.55, os.path.join(ROOT, 'blender', 'out_hero', 'storefront.png')); print('RENDERED storefront', flush=True)
 
-build()
+if __name__ == '__main__' or '--bake' not in user:
+    build()

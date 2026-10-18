@@ -35,7 +35,7 @@ A Starbucks-style coffee chain concept for Bonifacio Global City and Makati, Met
   - a Green / Gold / Reserve comparison table with your column highlighted;
   - Join and Sign in tabs with validation, and an FAQ.
 - `stores.html`:
-  - **Hero:** "Four stores. One never closes." with the live open/closed status of every store, next to a Blender-rendered 3D storefront at dusk (green sign, scalloped striped awning, glowing windows, bistro tables, an A-frame chalk menu, string lights) that you can drag (or turn with the arrow keys) to walk all the way round it, a crescent moon and floating feature chips;
+  - **Hero:** "Four stores. One never closes." with the live open/closed status of every store, next to a Blender-rendered 3D storefront at dusk (green sign, scalloped striped awning, glowing windows, bistro tables, an A-frame chalk menu, string lights) as a live 3D model you can drag round (or turn with the arrow keys) and zoom into, a crescent moon and floating feature chips;
   - an illustrated Makati and BGC map (EDSA runs between them) with labelled pins;
   - filters for open now, drive-thru, outdoor seats, pet friendly and quiet room;
   - weekday and weekend hours with today marked, and a Directions link (Google Maps);
@@ -75,7 +75,7 @@ A Starbucks-style coffee chain concept for Bonifacio Global City and Makati, Met
 2. `python blender/finish.py [id ...]` trims and squares them into `assets/3d/`.
 3. Bump `ART_VERSION` in `js/data.js`.
 - `--hero` renders the product with no floor into `blender/out_hero/` (the menu hero cups in `assets/3d/hero/`).
-- `blender -b -P blender/storefront.py -- --turn 48 --samples 96 --res 1500` renders the storefront turntable (96 views; render 48 first, then `--turn 96 --odd` fills in the views between), then `python blender/finish_turn.py` crops them alike into `assets/3d/hero/turn/` (phones load every other view). Without `--turn` it renders one still.
+- `blender -b -P blender/storefront_bake.py` builds the storefront, bakes its Cycles lighting into three texture atlases and exports `assets/3d/hero/storefront.glb` (Draco + WebP, under 1 MB). The stores hero draws it live with three.js: drag with momentum, arrow keys, pinch / wheel / + − zoom. `blender -b -P blender/storefront.py -- --turn 1` then `python blender/finish_turn.py` renders the matching poster `assets/3d/hero/turn/f00.webp`.
 - Clear cups are thin PET (transparent + glossy by Fresnel) in a light mint studio, filled to 95%.
 
 `tools/render.html` is also a 3D viewer: open http://localhost:5240/tools/render.html to browse every model.

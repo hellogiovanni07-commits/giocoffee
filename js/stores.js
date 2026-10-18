@@ -40,92 +40,36 @@ list();
 const h = location.hash.slice(1);
 pick(STORES.some(s => s.id === h) ? h : store.get('store', 'bgc'));
 
-/* ---------- the storefront turns ----------
-   96 Blender views, 3.75° apart (phones and data-saver load every other one). They download six at a time, nearest
-   the front first, and are decoded once at the canvas's own size; each frame shows the one view nearest the drag
-   position, so the picture stays crisp while it turns. */
+/* ---------- the storefront turns: a live 3D model (baked in Blender), drag with momentum, arrow keys ----------
+   The <img> is the poster while the model loads, and stays if 3D can't run. */
 (() => {
   const spin = $('#spin'), img = $('#spinImg'); if (!spin) return;
-  const ALL = 96, lite = matchMedia('(max-width: 700px)').matches || navigator.connection?.saveData;
-  const STEP = lite ? 2 : 1, N = ALL / STEP;                      // views in use; positions are in view units
-  const src = k => `assets/3d/hero/turn/f${String(k * STEP).padStart(2, '0')}.webp?v=2`;
-  const cv = document.createElement('canvas'); cv.className = 'sth__cv'; cv.setAttribute('aria-hidden', 'true');
-  const ctx = cv.getContext('2d');
-  const views = new Array(N), ready = new Array(N).fill(false);
-  let pos = 0, drag = null, vel = 0, raf = 0, touched = false, live = false, lastKey = '', W = 0, H = 0;
-  const wrap = i => ((i % N) + N) % N;
   const side = d => d < 30 || d > 330 ? 'Front of the store' : d < 150 ? 'Right side, the blade sign and side window' : d < 210 ? 'Back of the store, staff door and bench' : 'Left side, the street lamp and side window';
-  const size = () => {
-    const r = spin.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
-    W = Math.min(img.naturalWidth || 960, Math.round(r.width * d)); H = Math.round(W * (img.naturalHeight || 671) / (img.naturalWidth || 960));
-    cv.width = W; cv.height = H; lastKey = ''; frame();
+  let view = null, touched = false, last = -1;
+  const announce = a => {
+    const deg = Math.round(((-a * 180 / Math.PI) % 360 + 360) % 360 / 7.5) * 7.5 % 360;
+    if (deg !== last) { last = deg; spin.setAttribute('aria-valuenow', deg); spin.setAttribute('aria-valuetext', side(deg)); }
   };
-  const near = i => { for (let k = 0; k <= N / 2; k++) { if (ready[wrap(i + k)]) return wrap(i + k); if (ready[wrap(i - k)]) return wrap(i - k); } return -1; };
-  // draw the single nearest view (blending two views 3.75° apart reads as a double image, not motion)
-  function frame() {
-    raf = 0; if (!live) return;
-    const i = wrap(Math.round(pos)), A = ready[i] ? i : near(i), key = String(A);
-    if (A < 0 || key === lastKey) return; lastKey = key;
-    ctx.clearRect(0, 0, W, H); ctx.drawImage(views[A], 0, 0, W, H);
-  }
-  const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
-  const announce = () => {
-    const deg = Math.round(wrap(Math.round(pos)) * 360 / N) % 360;
-    if (+spin.getAttribute('aria-valuenow') !== deg) { spin.setAttribute('aria-valuenow', deg); spin.setAttribute('aria-valuetext', side(deg)); }
-  };
-  const set = p => { pos = p; kick(); };
-  // load: six at a time, nearest the front first (both ways), each decoded once at canvas size
-  const order = [0]; for (let k = 1; k < N; k++) order.push(k % 2 ? (k + 1) / 2 : N - k / 2);
-  const getOne = async i => {
-    const im = new Image(); im.decoding = 'async'; im.src = src(i);
-    try { await im.decode(); } catch (e) { return; }
-    if (!W) size();
-    views[i] = 'createImageBitmap' in window ? await createImageBitmap(im, { resizeWidth: W, resizeHeight: H, resizeQuality: 'high' }).catch(() => im) : im;
-    ready[i] = true;
-    if (i === 0 && !live) { live = true; spin.append(cv); spin.classList.add('live'); }
-    lastKey = ''; kick();
-  };
-  const load = async () => { await getOne(0); let n = 1; const worker = async () => { while (n < order.length) await getOne(order[n++]); }; await Promise.all(Array.from({ length: 6 }, worker)); };
-  const start = () => { size(); load(); };
-  if (img.complete && img.naturalWidth) start(); else img.addEventListener('load', start, { once: true });
-  // on resize the canvas follows; the decoded views are simply scaled when drawn
-  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (live) size(); }, 200); }, { passive: true });
-
-  // drag: one full width turns it about 300°; on release it coasts and settles exactly on a view
-  const settle = () => {
-    const tick = () => {
-      if (drag) return;
-      if (!reduce && Math.abs(vel) > .02) { vel *= .9; set(pos + vel); }
-      else { const target = Math.round(pos), d = target - pos; if (Math.abs(d) < .01) { set(target); announce(); return; } set(pos + d * (reduce ? 1 : .25)); }
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  };
-  spin.addEventListener('pointerdown', e => {
-    touched = true; vel = 0; spin.setPointerCapture(e.pointerId);
-    drag = { x: e.clientX, p: pos, lx: e.clientX, t: performance.now(), per: spin.clientWidth / (N * 300 / 360) };
-    spin.classList.add('drag');
-  });
-  spin.addEventListener('pointermove', e => {
-    if (!drag) return;
-    const now = performance.now(), dt = Math.max(8, now - drag.t), dp = -(e.clientX - drag.lx) / drag.per;
-    vel = vel * .6 + dp * (16 / dt) * .4; drag.t = now; drag.lx = e.clientX;
-    set(drag.p - (e.clientX - drag.x) / drag.per); announce();
-  }, { passive: true });
-  const end = () => { if (!drag) return; drag = null; spin.classList.remove('drag'); settle(); };
-  spin.addEventListener('pointerup', end); spin.addEventListener('pointercancel', end);
+  spin.addEventListener('pointerdown', () => { touched = true; });
+  $('#spinZoom').addEventListener('click', e => { const b = e.target.closest('[data-z]'); if (!b || !view) return; touched = true; const z = b.dataset.z; if (z === 'in') view.zoomBy(1.35); else if (z === 'out') view.zoomBy(1 / 1.35); else view.reset(); });
   spin.addEventListener('keydown', e => {
+    if (!view) return;
     const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key];
-    if (k) { e.preventDefault(); touched = true; set(Math.round(pos) + k * Math.max(1, N / 48)); announce(); }
-    else if (e.key === 'Home') { e.preventDefault(); set(0); announce(); }
+    if (k) { e.preventDefault(); touched = true; view.turnBy(-k * Math.PI / 24); }
+    else if (e.key === 'Home') { e.preventDefault(); view.reset(); }
+    else if (e.key === '+' || e.key === '=') { e.preventDefault(); view.zoomBy(1.25); }
+    else if (e.key === '-' || e.key === '_') { e.preventDefault(); view.zoomBy(.8); }
   });
-  // once the views near the front are in, a small turn and back so it's clear the store moves
-  // (only in the first few seconds, and only a small turn: a late, wide swing would look like a glitch)
-  const born = performance.now();
-  if (!reduce) setTimeout(function peek() {
-    if (touched || performance.now() - born > 4000) return; if (order.slice(0, 10).some(i => !ready[i])) return setTimeout(peek, 250);
-    const t0 = performance.now(), amp = N / 24;
-    const step = now => { if (touched) return; const k = Math.min(1, (now - t0) / 2600); set(Math.sin(k * Math.PI) * amp); if (k < 1) requestAnimationFrame(step); else set(0); };
-    requestAnimationFrame(step);
-  }, 900);
+  const start = async () => {
+    try {
+      const { mountStorefront } = await import('./storefront3d.js?v=18');
+      view = await mountStorefront(spin, { reduce, src: 'assets/3d/hero/storefront.glb?v=2', onTurn: announce });
+      spin.classList.add('live'); $('#spinZoom').hidden = false;
+      // a small turn and back so it's clear the store moves (only if nobody has touched it yet)
+      if (!reduce && !touched) { view.turnBy(-.3); setTimeout(() => { if (!touched) view.turnTo(0); }, 900); }
+    } catch (err) { console.warn('3D storefront unavailable, showing the picture', err); }
+  };
+  // load once the hero is on screen and the page has settled
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { io.disconnect(); setTimeout(start, 150); } }); io.observe(spin); }
+  else start();
 })();
