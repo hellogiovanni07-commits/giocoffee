@@ -234,12 +234,15 @@ def build():
         f.location = (0, sgn * .0095, -H / 2 - .02); f.data.materials.append(chalk); parts.append(f)
         for o in parts: o.parent = hinge
     tube('afhinge', [(BX - W / 2 + .05, BY, H + .005), (BX + W / 2 - .05, BY, H + .005)], .012, gold, 4)
-    cyl('lampPole', .05, 0, 3.0, (-3.4, -2.4), metal, 16)
-    cyl('lampBase', .12, 0, .22, (-3.4, -2.4), metal, 16)
-    box('lantern', -3.57, -3.23, -2.57, -2.23, 3.0, 3.4, emit('lantern', '#ffe2b0', 9), .02)
-    box('lanternCap', -3.61, -3.19, -2.61, -2.19, 3.4, 3.47, metal, .02)
-    Ll = bpy.data.lights.new('lamp', 'POINT'); Ll.energy = 70; Ll.color = (1, .82, .55); Ll.shadow_soft_size = .2
-    link(bpy.data.objects.new('lamp', Ll)).location = (-3.4, -2.4, 3.2)
+    def lamp_post(tag, x, y):
+        cyl('lampPole' + tag, .05, 0, 3.0, (x, y), metal, 16)
+        cyl('lampBase' + tag, .12, 0, .22, (x, y), metal, 16)
+        box('lantern' + tag, x - .17, x + .17, y - .17, y + .17, 3.0, 3.4, emit('lantern', '#ffe2b0', 9), .02)
+        box('lanternCap' + tag, x - .21, x + .21, y - .21, y + .21, 3.4, 3.47, metal, .02)
+        Ll = bpy.data.lights.new('lamp' + tag, 'POINT'); Ll.energy = 70; Ll.color = (1, .82, .55); Ll.shadow_soft_size = .2
+        link(bpy.data.objects.new('lamp' + tag, Ll)).location = (x, y, 3.2)
+    lamp_post('', -3.4, -2.4)
+    lamp_post('R', 3.1, -1.9)          # the corner post the right-hand string lights hang from
 
     # string lights from the lamp to the shop corner, bulbs along the sag
     A, B = Vector((-3.4, -2.4, 2.95)), Vector((-2.3, -.86, 2.95)); pts = []
@@ -247,10 +250,10 @@ def build():
         t = i / 24; p = A.lerp(B, t); p.z -= math.sin(t * math.pi) * .45; pts.append(tuple(p))
     tube('wire', pts, .006, metal, 2)
     for i in range(2, 24, 3): sphere(f'fairy{i}', .04, (pts[i][0], pts[i][1], pts[i][2] - .05), emit('fairy', '#ffe0a8', 30), 2)
-    A, B = Vector((2.3, -.86, 2.95)), Vector((3.1, -1.9, 2.4)); pts = []
+    A, B = Vector((2.3, -.86, 2.95)), Vector((3.1, -1.9, 2.95)); pts = []
     for i in range(17):
         t = i / 16; p = A.lerp(B, t); p.z -= math.sin(t * math.pi) * .3; pts.append(tuple(p))
-    tube('wire2', pts, .006, metal, 2); cyl('postR', .035, 0, 2.45, (3.1, -1.9), metal, 10)
+    tube('wire2', pts, .006, metal, 2)
     for i in range(2, 16, 3): sphere(f'fairyR{i}', .04, (pts[i][0], pts[i][1], pts[i][2] - .05), emit('fairy', '#ffe0a8', 30), 2)
     # roof garden along the front, glowing side window
     box('roofbox', -2.25, 2.25, -.78, -.42, 3.26, 3.5, house, .02)
@@ -263,7 +266,7 @@ def build():
     for k, y in enumerate((-.2, 1.95)):
         box(f'sconce{k}', -2.42, -2.3, y - .06, y + .06, 2.05, 2.3, gold, .02)
         sphere(f'sconceB{k}', .06, (-2.44, y, 2.0), emit('bulb', '#ffd9a0', 25))
-    # back of the shop: staff door with a lamp, AC units, the name painted in a band, a bench, a bike
+    # back of the shop: staff door with a lamp, AC units, the name painted in a band, a bench
     box('backdoor', .95, 1.75, 2.1, 2.15, 0, 2.15, house, .01)
     box('backdoorframe', .9, 1.8, 2.09, 2.13, 2.15, 2.22, gold, .005)
     box('backstep', .85, 1.85, 2.1, 2.45, 0, .07, mat('stone2', '#cfc3ad', .6), .01)
@@ -277,11 +280,20 @@ def build():
     bd.scale = (2.43, .32, 1); bd.rotation_euler = (math.pi / 2, 0, math.pi); bd.location = (-.95, 2.111, 1.35); bd.data.materials.append(bandm)
     box('bench', -1.9, -.4, 2.35, 2.62, .4, .46, wood, .01)
     for x in (-1.8, -.5): box(f'benchleg{x}', x, x + .06, 2.38, 2.6, 0, .4, metal, .005)
-    for r, x in ((.32, 2.75), (.32, 3.55)):
-        bpy.ops.mesh.primitive_torus_add(major_radius=r, minor_radius=.025, location=(x, 2.35, r + .02), rotation=(math.pi / 2, 0, 0), major_segments=48, minor_segments=8)
-        bpy.context.object.data.materials.append(metal); bpy.ops.object.shade_smooth()
-    tube('bikeframe', [(2.75, 2.35, .34), (3.1, 2.35, .62), (3.55, 2.35, .34), (3.1, 2.35, .34), (2.75, 2.35, .34)], .02, mat('bikegreen', GREEN, .35, coat=.6), 3)
-    tube('bikebar', [(3.1, 2.35, .62), (3.05, 2.35, .78)], .016, metal, 3); box('bikeseat', 2.98, 3.14, 2.3, 2.4, .78, .82, house, .01)
+    # the bike leans on the right-hand wall under the side window (built along X, then turned to the wall and tilted into it)
+    bike = link(bpy.data.objects.new('bikerig', None)); bike.location = (2.56, 1.0, 0); bike.rotation_euler = (-.2, 0, math.pi / 2)
+    parts = []
+    for x in (-.42, .42):
+        bpy.ops.mesh.primitive_torus_add(major_radius=.3, minor_radius=.025, location=(x, 0, .32), rotation=(math.pi / 2, 0, 0), major_segments=48, minor_segments=8)
+        o = bpy.context.object; o.name = f'bikewheel{x}'; o.data.materials.append(metal); bpy.ops.object.shade_smooth(); parts.append(o)
+        parts.append(cyl(f'bikehub{x}', .03, -.03, .03, (x, 0), metal, 12)); parts[-1].rotation_euler = (math.pi / 2, 0, 0); parts[-1].location.z = .32
+    parts.append(tube('bikeframe', [(-.42, 0, .32), (-.05, 0, .6), (.42, 0, .32), (.02, 0, .32), (-.42, 0, .32)], .02, mat('bikegreen', GREEN, .35, coat=.6), 3))
+    parts.append(tube('bikefork', [(.42, 0, .32), (.36, 0, .66), (.3, 0, .76)], .016, metal, 3))
+    parts.append(tube('bikebar', [(.3, -.16, .78), (.3, .16, .78)], .014, metal, 3))
+    parts.append(tube('bikepost', [(-.05, 0, .6), (-.1, 0, .74)], .016, metal, 3))
+    parts.append(box('bikeseat', -.2, -.02, -.05, .05, .74, .78, house, .01))
+    parts.append(tube('bikestand', [(.02, .02, .32), (.08, .1, .02)], .01, metal, 2))
+    for o in parts: o.parent = bike
     # right side: a second glowing window with a frame
     plane('sideGlowR', .7, 1.7, .95, 2.35, 2.311, emit('glow3', '#f2c487', 2.6), face='-X')
     for nm, a0, a1, b0, b1 in (('rfT', .66, 1.74, 2.35, 2.41), ('rfB', .66, 1.74, .89, .95), ('rfL', .64, .7, .89, 2.41), ('rfR', 1.7, 1.76, .89, 2.41)):
