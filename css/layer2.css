@@ -419,3 +419,6 @@ body:has(.mnav.open) .hdr .find,body:has(.mnav.open) .hdr .cart-btn{color:var(--
 .st-hero:has(.sth__spin.zoomed) .sth__copy::before{opacity:1}
 @media (max-width:980px){.sth__copy::before{inset:-40px -16px -48px;-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 60px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 60px),transparent)}}
 .sth__hint{transition:opacity 200ms ease}.sth__spin.zoomed~.sth__hint{opacity:0}
+/* the wash runs the full height of the hero (the hero clips it), so it only fades towards the store: no edges */
+.sth__copy::before{inset:-100vh -72px -100vh -100vw}
+@media (max-width:980px){.sth__copy::before{inset:-100vh -100vw -64px}}
