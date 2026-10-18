@@ -49,6 +49,14 @@ def sphere(name, r, loc, m, sub=3):
     o = bpy.context.object; o.name = name; o.data.materials.append(m); bpy.ops.object.shade_smooth(); return o
 
 
+def mesh(name, verts, faces, m, solid=0):
+    me = bpy.data.meshes.new(name); me.from_pydata(verts, [], faces); me.update()
+    o = link(bpy.data.objects.new(name, me)); me.materials.append(m)
+    for f in me.polygons: f.use_smooth = True
+    if solid: o.modifiers.new('t', 'SOLIDIFY').thickness = solid
+    return o
+
+
 def stripes(name, a, b, freq):
     """Awning canvas: crisp stripes across X."""
     m = mat(name, a, .75, sheen=.4); N = m.node_tree.nodes; L = m.node_tree.links; bs = N['Principled BSDF']
@@ -116,7 +124,7 @@ def build():
     for i, x in enumerate((-1.55, -.35, .1)):
         cyl(f'cupIn{i}', .07, .97, 1.13, (x, .1), mat('cupw', '#fbfaf6', .3))
     box('menuboard', -1.7, .2, .3, .36, 1.45, 2.05, house)
-    plane('menutext', -1.6, .1, 1.55, 1.95, .29, (lambda m: (image(m, 'store_window.png', alpha=True), m)[1])(mat('menut', '#ffffff', .6)))
+    plane('menutext', -1.35, -.15, 1.55, 1.95, .29, (lambda m: (image(m, 'store_window.png', alpha=True), m)[1])(mat('menut', '#ffffff', .6)))
     for i, x in enumerate((-1.5, -.7, .1)):
         cyl(f'cord{i}', .008, 1.95, 2.25, (x, -.1), metal, 8)
         sphere(f'bulb{i}', .085, (x, -.1, 1.9), emit('bulb', '#ffd9a0', 40))
@@ -135,13 +143,24 @@ def build():
     box('handle', 1.18, 1.22, -.76, -.7, .8, 1.5, gold, .01)
     box('step', .98, 1.92, -.98, -.5, 0, .06, mat('stone', '#cfc3ad', .6), .01)
 
-    # striped awning with a scalloped-free straight valance
-    aw = stripes('awning', GREEN, '#f4ecdc', 9)
-    bpy.ops.mesh.primitive_plane_add(size=1); a = bpy.context.object; a.name = 'awning'
-    a.scale = (2.9, 1.15, 1); a.location = (-.64, -1.22, 2.24); a.rotation_euler = (math.radians(-34), 0, 0); a.data.materials.append(aw)
-    s = a.modifiers.new('t', 'SOLIDIFY'); s.thickness = .02
-    plane('valance', -2.09, .81, 1.72, 1.92, -1.7, aw)
-    for x in (-2.05, .77): tube(f'awarm{x}', [(x, -.72, 2.62), (x, -1.68, 1.94)], .012, metal, 3)
+    # the awning: canvas slope from under the fascia, closed side cheeks, a scalloped valance, a metal frame
+    X0, X1, YB, YF, ZT, ZF, n = -2.06, .82, -.73, -1.58, 2.34, 1.9, 9
+    w = (X1 - X0) / (2 * n)
+    aw = stripes('awning', GREEN, '#f4ecdc', n / (X1 - X0))
+    mesh('awning', [(X0, YB, ZT), (X1, YB, ZT), (X1, YF, ZF), (X0, YF, ZF)], [(0, 1, 2, 3)], aw, .012)
+    # valance: one scallop under every stripe
+    vt, vb = [], []
+    for i in range(2 * n * 8 + 1):
+        x = X0 + (X1 - X0) * i / (2 * n * 8); t = (i % 8) / 8
+        vt.append((x, YF, ZF)); vb.append((x, YF, ZF - .14 - math.sin(t * math.pi) * .06))
+    N1 = len(vt); mesh('valance', vt + vb, [(i, i + 1, N1 + i + 1, N1 + i) for i in range(N1 - 1)], aw, .01)
+    canvas = mat('canvas', GREEN, .75, sheen=.4)
+    for x in (X0, X1):
+        mesh(f'cheek{x}', [(x, YB, ZT), (x, YF, ZF), (x, YF, ZF - .14), (x, YB, ZF - .02)], [(0, 1, 2, 3)], canvas, .01)
+        tube(f'awarm{x}', [(x, YB, ZT - .01), (x, YF, ZF - .01)], .014, metal, 3)
+        tube(f'awstrut{x}', [(x, YB, ZF - .2), (x, YF + .05, ZF - .02)], .012, metal, 3)
+    tube('awfront', [(X0, YF - .005, ZF - .005), (X1, YF - .005, ZF - .005)], .014, metal, 3)
+    tube('awback', [(X0, YB - .01, ZT - .01), (X1, YB - .01, ZT - .01)], .016, metal, 3)
     box('doorcanopy', 1.0, 1.9, -1.15, -.72, 2.26, 2.3, house, .01)
 
     # blade sign on a brass arm (faces the street corner)
@@ -150,7 +169,7 @@ def build():
     bl = mat('blade', '#ffffff', .4); image(bl, 'store_blade.png')
     N, L, b = G['nodes'](bl); L.new(N['Image Texture'].outputs['Color'], b.inputs['Emission Color']); b.inputs['Emission Strength'].default_value = .25
     box('bladeboard', 2.36, 2.98, -.53, -.47, 1.96, 2.6, house, .02)
-    plane('bladeface', 2.4, 2.94, 2.0, 2.56, -.535, bl)
+    plane('bladeface', 2.4, 2.94, 2.01, 2.55, -.535, bl)
 
     # planters either side of the door, a potted olive by the window
     leaf = bump(mat('leaf', '#3c7a4c', .55, sss=.15, sss_s=.05), 'noise', 18, .6, .03)
@@ -164,16 +183,30 @@ def build():
         sphere(f'crown{i}', r, (-2.55 + dx, -1.15, dz), leaf2 if i % 2 else leaf)
 
     # bistro sets on the paving
+    seatm = mat('seat', HOUSE, .5, coat=.4, coat_r=.3)
     def bistro(x, y, cups):
         cyl(f'tbase{x}', .2, 0, .03, (x, y), metal); cyl(f'tstem{x}', .028, .03, .74, (x, y), metal, 12)
         cyl(f'ttop{x}', .34, .74, .78, (x, y), mat('marble', '#f4efe6', .25, coat=.5))
         for k, a in enumerate((.4, 3.5)):
             cx, cy = x + math.cos(a) * .55, y + math.sin(a) * .55
-            cyl(f'seat{x}{k}', .19, .44, .48, (cx, cy), metal)
+            cyl(f'seat{x}{k}', .2, .45, .5, (cx, cy), seatm)
+            bpy.ops.mesh.primitive_torus_add(major_radius=.2, minor_radius=.014, location=(cx, cy, .45), major_segments=48, minor_segments=8)
+            bpy.context.object.data.materials.append(metal); bpy.ops.object.shade_smooth()
+            bpy.ops.mesh.primitive_torus_add(major_radius=.17, minor_radius=.008, location=(cx, cy, .17), major_segments=48, minor_segments=6)
+            bpy.context.object.data.materials.append(metal); bpy.ops.object.shade_smooth()
             for j in range(4):
-                aa = j * math.pi / 2 + .785; cyl(f'leg{x}{k}{j}', .014, 0, .44, (cx + math.cos(aa) * .14, cy + math.sin(aa) * .14), metal, 8)
-            bx, by = cx + math.cos(a) * .17, cy + math.sin(a) * .17; px, py = -math.sin(a) * .16, math.cos(a) * .16
-            tube(f'back{x}{k}', [(bx - px, by - py, .48), (bx - px, by - py, .86), (bx + px, by + py, .86), (bx + px, by + py, .48)], .014, metal, 3)
+                aa = a + j * math.pi / 2 + .785
+                tube(f'leg{x}{k}{j}', [(cx + math.cos(aa) * .155, cy + math.sin(aa) * .155, .45), (cx + math.cos(aa) * .2, cy + math.sin(aa) * .2, 0)], .016, metal, 3)
+            # backrest faces away from the table: two uprights rising from the seat ring, a curved panel between them
+            up = lambda ang, z, r=.19: (cx + math.cos(ang) * (r + (z - .45) * .12), cy + math.sin(ang) * (r + (z - .45) * .12), z)
+            for side in (-.62, .62):
+                tube(f'upr{x}{k}{side}', [up(a + side, .45, .19), up(a + side, .9, .19)], .015, metal, 3)
+            vs, fs, m = [], [], 12
+            for i in range(m + 1):
+                ang = a - .62 + 1.24 * i / m
+                vs += [up(ang, .7, .2), up(ang, .9, .2)]
+            fs = [(2 * i, 2 * i + 2, 2 * i + 3, 2 * i + 1) for i in range(m)]
+            mesh(f'backrest{x}{k}', vs, fs, seatm, .02)
         for i, (dx, dy) in enumerate(cups):
             cyl(f'tcup{x}{i}', .06, .78, .95, (x + dx, y + dy), mat('cupw', '#fbfaf6', .35))
             cyl(f'tlid{x}{i}', .064, .95, .975, (x + dx, y + dy), mat('lidw', '#ece6da', .3))
