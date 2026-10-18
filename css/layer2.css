@@ -417,3 +417,11 @@ body:has(.mnav.open) .hdr .find,body:has(.mnav.open) .hdr .cart-btn{color:var(--
 .sleeve__stamp{opacity:.35}
 .sleeve figcaption{border-top-color:rgba(43,26,13,.25)}
 .sleeve figcaption small,.sleeve figcaption span{color:#5a4330}
+
+/* the storefront turns */
+.sth__spin{position:relative;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;transition:translate 700ms var(--ease-out);border-radius:24px}
+.sth__spin.drag{cursor:grabbing}
+.sth__spin img{pointer-events:none}
+.sth__spin:focus-visible{outline:2px solid var(--gold-l);outline-offset:6px;box-shadow:none}
+.sth__hint{position:absolute;left:50%;bottom:-6px;translate:-50% 0;display:inline-flex;align-items:center;gap:10px;font:700 22px/1 var(--hand);color:var(--gold-l);white-space:nowrap;pointer-events:none;opacity:.9}
+.sth__hint svg{width:42px;height:14px}

@@ -39,3 +39,49 @@ document.addEventListener('click', e => {
 list();
 const h = location.hash.slice(1);
 pick(STORES.some(s => s.id === h) ? h : store.get('store', 'bgc'));
+
+/* ---------- the storefront turns: 48 Blender views, drag (with a little momentum), arrow keys ---------- */
+(() => {
+  const spin = $('#spin'), img = $('#spinImg'); if (!spin) return;
+  const N = 48, src = i => `assets/3d/hero/turn/f${String(i).padStart(2, '0')}.webp?v=1`;
+  const frames = [], loaded = new Set();
+  let pos = 0, shown = 0, drag = null, vel = 0, raf = 0, touched = false;
+  const side = d => d < 30 || d > 330 ? 'Front of the store' : d < 150 ? 'Right side, the blade sign and side window' : d < 210 ? 'Back of the store, staff door and bench' : 'Left side, the street lamp and side window';
+  let want = 0;
+  const put = i => { if (want === i && shown !== i) { img.src = frames[i].src; shown = i; } };
+  const get = i => { if (!frames[i]) { const im = new Image(); im.decoding = 'async'; im.onload = () => { loaded.add(i); put(i); }; im.src = src(i); frames[i] = im; } };
+  const show = () => {
+    const i = ((Math.round(pos) % N) + N) % N; want = i;
+    const deg = Math.round(i * 360 / N); spin.setAttribute('aria-valuenow', deg); spin.setAttribute('aria-valuetext', side(deg));
+    if (loaded.has(i)) put(i); else get(i);
+  };
+  // fetch the views nearest the front first, both directions
+  const load = () => { for (let k = 1; k < N; k++) get(k % 2 ? (k + 1) / 2 : N - k / 2); };
+  frames[0] = { src: img.src }; loaded.add(0);
+  if (img.complete) setTimeout(load, 200); else img.addEventListener('load', () => setTimeout(load, 200), { once: true });
+  const coast = () => { raf = 0; if (Math.abs(vel) < .02 || reduce) return; pos += vel; vel *= .92; show(); raf = requestAnimationFrame(coast); };
+  spin.addEventListener('pointerdown', e => {
+    touched = true; cancelAnimationFrame(raf); vel = 0; spin.setPointerCapture(e.pointerId);
+    drag = { x: e.clientX, p: pos, t: performance.now(), lx: e.clientX }; spin.classList.add('drag');
+  });
+  spin.addEventListener('pointermove', e => {
+    if (!drag) return; const per = spin.clientWidth / 30;           // ~30 frames across the width: one drag turns it most of the way
+    pos = drag.p - (e.clientX - drag.x) / per;
+    const now = performance.now(); vel = -(e.clientX - drag.lx) / per / Math.max(1, (now - drag.t) / 16); drag.t = now; drag.lx = e.clientX;
+    show();
+  });
+  const end = () => { if (!drag) return; drag = null; spin.classList.remove('drag'); if (!reduce) raf = requestAnimationFrame(coast); };
+  spin.addEventListener('pointerup', end); spin.addEventListener('pointercancel', end);
+  spin.addEventListener('keydown', e => {
+    const k = { ArrowLeft: 1, ArrowDown: 1, ArrowRight: -1, ArrowUp: -1 }[e.key];
+    if (k) { e.preventDefault(); touched = true; pos = Math.round(pos) + k; show(); }
+    else if (e.key === 'Home') { e.preventDefault(); pos = 0; show(); }
+  });
+  // once the views are in, a small turn and back so it's clear the store moves
+  if (!reduce) setTimeout(function peek(t0) {
+    if (touched) return; if (loaded.size < N) return setTimeout(peek, 400);
+    const start = performance.now();
+    const step = now => { if (touched) return; const k = Math.min(1, (now - start) / 2400); pos = Math.sin(k * Math.PI) * 6; show(); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }, 1200);
+})();

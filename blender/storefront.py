@@ -16,6 +16,7 @@ G = {'__file__': os.path.join(HERE, 'gio_scene.py'), '__name__': '__main__'}
 exec(open(G['__file__'], encoding='utf8').read(), G)
 reset, rig, mat, rbox, srgb, link, GLASS, image, bump, tube = (G[k] for k in ('reset', 'rig', 'mat', 'rbox', 'srgb', 'link', 'GLASS', 'image', 'bump', 'tube'))
 SAMPLES, RES, ROOT = G['SAMPLES'], int(G['arg']('--res', 1600)), G['ROOT']
+TURN = int(G['arg']('--turn', 0))   # >0: render a turntable of this many frames into blender/out_hero/turn/
 
 HOUSE, GREEN, GOLD, CREAM = '#14332b', '#0e6b4e', '#c9a15b', '#f1e8d8'
 
@@ -94,7 +95,7 @@ def build():
     wood = bump(mat('wood', '#9a6a43', .55), 'wave', 6, .3, .01)
 
     # plaza: a paved corner with a curb
-    box('plaza', -4.2, 4.2, -3.0, 2.3, -.26, 0, paving(), .04)
+    box('plaza', -4.2, 4.2, -3.0, 3.0, -.26, 0, paving(), .04)
     box('curb', -4.25, 4.25, -3.08, -2.9, -.3, .02, mat('curb', '#cbbd a2'.replace(' ', ''), .7), .02)
 
     # building core behind the shop room
@@ -170,6 +171,8 @@ def build():
     N, L, b = G['nodes'](bl); L.new(N['Image Texture'].outputs['Color'], b.inputs['Emission Color']); b.inputs['Emission Strength'].default_value = .25
     box('bladeboard', 2.36, 2.98, -.53, -.47, 1.96, 2.6, house, .02)
     plane('bladeface', 2.4, 2.94, 2.01, 2.55, -.535, bl)
+    bpy.ops.mesh.primitive_plane_add(size=1); bb = bpy.context.object; bb.name = 'bladeback'
+    bb.scale = (.54, .54, 1); bb.rotation_euler = (math.pi / 2, 0, math.pi); bb.location = (2.67, -.465, 2.28); bb.data.materials.append(bl)
 
     # planters either side of the door, a potted olive by the window
     leaf = bump(mat('leaf', '#3c7a4c', .55, sss=.15, sss_s=.05), 'noise', 18, .6, .03)
@@ -213,13 +216,23 @@ def build():
             cyl(f'tband{x}{i}', .062, .83, .88, (x + dx, y + dy), mat('kraft', '#c49a62', .7))
     bistro(-1.3, -2.1, [(-.08, .05), (.12, -.06)])
     bistro(.9, -2.35, [(.05, 0)])
-    # A-frame chalkboard and a street lamp at the corner
-    ch = mat('chalk', '#ffffff', .8); image(ch, 'store_window.png', alpha=False)
-    board = mat('board', '#17251f', .85)
-    for k, ang in enumerate((.16, -.16)):
-        bpy.ops.mesh.primitive_cube_add(size=1); o = bpy.context.object; o.scale = (.62, .03, .9)
-        o.location = (2.95, -1.95 + (.13 if k else -.13), .44); o.rotation_euler = (ang, 0, 0); o.data.materials.append(board)
-    plane('chalktext', 2.7, 3.2, .45, .62, -2.13, (lambda m: (image(m, 'store_window.png', alpha=True), m)[1])(mat('chalkw', '#ffffff', .8)))
+    # A-frame sandwich board: two framed chalk panels hinged at the top, the menu on both faces
+    chalk = mat('chalkface', '#ffffff', .85); image(chalk, 'store_chalk.png')
+    oak = bump(mat('oak', '#8a5a34', .55, coat=.2), 'wave', 9, .25, .008)
+    BX, BY, H, W, SP = 2.95, -1.95, .98, .62, .27       # position, height, width, half-spread at the feet
+    th = math.atan2(SP, H)
+    for k, sgn in enumerate((-1, 1)):                     # -1: the street-facing panel, +1: the back panel
+        hinge = link(bpy.data.objects.new(f'aframe{k}', None)); hinge.location = (BX, BY, H)
+        hinge.rotation_euler = (sgn * th, 0, 0)
+        parts = []
+        for nm, x0, x1, z0, z1 in (('L', -W / 2, -W / 2 + .045, -H, 0), ('R', W / 2 - .045, W / 2, -H, 0), ('T', -W / 2, W / 2, -.06, 0), ('B', -W / 2, W / 2, -H + .02, -H + .1)):
+            parts.append(box(f'af{k}{nm}', x0, x1, -.018, .018, z0, z1, oak, .006))
+        parts.append(box(f'afp{k}', -W / 2 + .04, W / 2 - .04, -.008, .008, -H + .1, -.06, mat('slate', '#1b2420', .8), .002))
+        bpy.ops.mesh.primitive_plane_add(size=1); f = bpy.context.object; f.name = f'afchalk{k}'
+        f.scale = (W - .1, (H - .17), 1); f.rotation_euler = (math.pi / 2, 0, 0 if sgn < 0 else math.pi)
+        f.location = (0, sgn * .0095, -H / 2 - .02); f.data.materials.append(chalk); parts.append(f)
+        for o in parts: o.parent = hinge
+    tube('afhinge', [(BX - W / 2 + .05, BY, H + .005), (BX + W / 2 - .05, BY, H + .005)], .012, gold, 4)
     cyl('lampPole', .05, 0, 3.0, (-3.4, -2.4), metal, 16)
     cyl('lampBase', .12, 0, .22, (-3.4, -2.4), metal, 16)
     box('lantern', -3.57, -3.23, -2.57, -2.23, 3.0, 3.4, emit('lantern', '#ffe2b0', 9), .02)
@@ -249,18 +262,45 @@ def build():
     for k, y in enumerate((-.2, 1.95)):
         box(f'sconce{k}', -2.42, -2.3, y - .06, y + .06, 2.05, 2.3, gold, .02)
         sphere(f'sconceB{k}', .06, (-2.44, y, 2.0), emit('bulb', '#ffd9a0', 25))
+    # back of the shop: staff door with a lamp, AC units, the name painted in a band, a bench, a bike
+    box('backdoor', .95, 1.75, 2.1, 2.15, 0, 2.15, house, .01)
+    box('backdoorframe', .9, 1.8, 2.09, 2.13, 2.15, 2.22, gold, .005)
+    box('backstep', .85, 1.85, 2.1, 2.45, 0, .07, mat('stone2', '#cfc3ad', .6), .01)
+    sphere('backlamp', .07, (1.35, 2.22, 2.42), emit('bulb', '#ffd9a0', 25)); box('backlampcap', 1.25, 1.45, 2.1, 2.3, 2.47, 2.52, metal, .01)
+    grille = bump(mat('acgrey', '#c9cdc9', .45, metal=.3), 'wave', 30, .5, .006)
+    for i, x in enumerate((-1.8, -1.05)):
+        box(f'ac{i}', x, x + .6, 2.1, 2.42, 2.3, 2.72, grille, .02)
+        cyl(f'acfan{i}', .13, 2.42, 2.43, (x + .3, 2.42), metal, 32)
+    bandm = mat('band', '#ffffff', .5); image(bandm, 'store_sign.png')
+    bpy.ops.mesh.primitive_plane_add(size=1); bd = bpy.context.object; bd.name = 'backband'
+    bd.scale = (2.43, .32, 1); bd.rotation_euler = (math.pi / 2, 0, math.pi); bd.location = (-.95, 2.111, 1.35); bd.data.materials.append(bandm)
+    box('bench', -1.9, -.4, 2.35, 2.62, .4, .46, wood, .01)
+    for x in (-1.8, -.5): box(f'benchleg{x}', x, x + .06, 2.38, 2.6, 0, .4, metal, .005)
+    for r, x in ((.32, 2.75), (.32, 3.55)):
+        bpy.ops.mesh.primitive_torus_add(major_radius=r, minor_radius=.025, location=(x, 2.35, r + .02), rotation=(math.pi / 2, 0, 0), major_segments=48, minor_segments=8)
+        bpy.context.object.data.materials.append(metal); bpy.ops.object.shade_smooth()
+    tube('bikeframe', [(2.75, 2.35, .34), (3.1, 2.35, .62), (3.55, 2.35, .34), (3.1, 2.35, .34), (2.75, 2.35, .34)], .02, mat('bikegreen', GREEN, .35, coat=.6), 3)
+    tube('bikebar', [(3.1, 2.35, .62), (3.05, 2.35, .78)], .016, metal, 3); box('bikeseat', 2.98, 3.14, 2.3, 2.4, .78, .82, house, .01)
+    # right side: a second glowing window with a frame
+    plane('sideGlowR', .7, 1.7, .95, 2.35, 2.311, emit('glow3', '#f2c487', 2.6), face='-X')
+    for nm, a0, a1, b0, b1 in (('rfT', .66, 1.74, 2.35, 2.41), ('rfB', .66, 1.74, .89, .95), ('rfL', .64, .7, .89, 2.41), ('rfR', 1.7, 1.76, .89, 2.41)):
+        box(nm, 2.3, 2.38, a0, a1, b0, b1, house, .005)
+    box('sideMullR', 2.36, 2.4, 1.17, 1.23, .95, 2.35, house, .005)
     # camera: three-quarter view from the street corner, a little above eye level
     cam = bpy.data.cameras.new('cam'); cam.lens = 50
     co = link(bpy.data.objects.new('cam', cam)); bpy.context.scene.camera = co
-    tgt = Vector((-.1, -.4, 1.45)); az, el, d = -.55, .33, 15.2
-    co.location = tgt + Vector((math.sin(az) * math.cos(el) * d, -math.cos(az) * math.cos(el) * d, math.sin(el) * d))
-    co.rotation_euler = (tgt - co.location).to_track_quat('-Z', 'Y').to_euler()
     sc = bpy.context.scene; sc.render.resolution_x = sc.render.resolution_y = RES
     for o in sc.objects:
         if o.type in ('MESH', 'CURVE') and o.data.materials and o.data.materials[0] and o.data.materials[0].name.split('.')[0] in ('pet', 'wintext', 'menut', 'chalkw'):
             o.visible_shadow = False
-    out = os.path.join(ROOT, 'blender', 'out_hero', 'storefront.png'); os.makedirs(os.path.dirname(out), exist_ok=True)
-    sc.render.filepath = out; bpy.ops.render.render(write_still=True); print('RENDERED storefront', flush=True)
-
+    def shoot(az, path, tgt=Vector((0, 0, 1.2)), el=.36, d=18.4):
+        co.location = tgt + Vector((math.sin(az) * math.cos(el) * d, -math.cos(az) * math.cos(el) * d, math.sin(el) * d))
+        co.rotation_euler = (tgt - co.location).to_track_quat('-Z', 'Y').to_euler()
+        os.makedirs(os.path.dirname(path), exist_ok=True); sc.render.filepath = path; bpy.ops.render.render(write_still=True)
+    if TURN:
+        for i in range(TURN):
+            shoot(-.55 + i * math.tau / TURN, os.path.join(ROOT, 'blender', 'out_hero', 'turn', f'f{i:02d}.png')); print('RENDERED frame', i, flush=True)
+    else:
+        shoot(-.55, os.path.join(ROOT, 'blender', 'out_hero', 'storefront.png')); print('RENDERED storefront', flush=True)
 
 build()
