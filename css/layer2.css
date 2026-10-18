@@ -422,3 +422,11 @@ body:has(.mnav.open) .hdr .find,body:has(.mnav.open) .hdr .cart-btn{color:var(--
 /* the wash runs the full height of the hero (the hero clips it), so it only fades towards the store: no edges */
 .sth__copy::before{inset:-100vh -72px -100vh -100vw}
 @media (max-width:980px){.sth__copy::before{inset:-100vh -100vw -64px}}
+/* phones: no store cards in the hero (the finder below lists them); the zoom row sits inside the hero, under the hint */
+@media (max-width:980px){
+  .sth__stores{display:none}
+  .sth__art{padding-bottom:112px}
+  .sth__hint{bottom:66px}
+  .sth__zoom{flex-direction:row;right:50%;translate:50% 0;top:auto;bottom:6px}
+}
+@media (pointer:coarse){.sth__hint .hz-d{display:none}.sth__hint .hz-m{display:inline}}
